@@ -1,7 +1,40 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(./font/MaterialIcons-Regular.woff) format('woff');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+/*  display: inline-block; */
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
 * {
     margin: 0px;
     padding: 0px;
-    box-sizing: border-box;
 }
 
 body {
@@ -22,6 +55,11 @@ body {
 section {
     flex: auto;
     display: flex;
+}
+
+.container {
+    display: flex;
+    flex-flow: row;
 }
 
 .menu {
@@ -71,6 +109,51 @@ section {
 .file_attr {
     background-color: var(--color-g5);
     overflow-x: auto;
+}
+
+.item,
+.header {
+    flex: none;
+    width: -webkit-fill-available;
+    max-height: 1em + 4px;
+    padding: 0 2px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.header {
+    font-weight: bold;
+    cursor: hand;
+}
+
+.header span {
+    cursor: hand;
+}
+
+.file_attr td {
+    border-right: 1px solid var(--color-border);
+}
+
+.align-right {
+    text-align: right;
+}
+
+.divider {
+    flex: none;
+    width: 1px;
+    height: -webkit-fill-available;
+    cursor: move;
+    background-color: var(--color-border);
+}
+
+.sort-icon {
+    cursor: hand;
+    float: right;
+    padding-right: 3px;
+}
+
+.hide {
+    display: none !important;
 }
 
 :root {
