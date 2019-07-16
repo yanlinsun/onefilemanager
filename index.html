@@ -2,15 +2,38 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <link href="index.css" rel="stylesheet" type="text/css"></link>
+    <title>One File Manager</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-
+          <section class="menu">
+          </section>
+          <section class="main">
+              <section class="window">
+                  <section class="bar">
+                  </section>
+                  <section class="file_container">
+                      <section class="file_list">
+                      </section>
+                      <section class="file_attr">
+                      </section>
+                  </section>
+              </section>
+              <section class="bar minimized">
+              </section>
+              <section class="window">
+                  <section class="file_container">
+                      <section class="file_list">
+                      </section>
+                      <section class="file_attr">
+                      </section>
+                  </section>
+                  <section class="bar">
+                  </section>
+              </section>
+          </section>
+          <section class="status">
+          </section>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')

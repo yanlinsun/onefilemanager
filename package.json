@@ -1,22 +1,22 @@
 {
-  "name": "electron-quick-start",
+  "name": "one-file-manager",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "One file manager. Manage all files(local, cloud) in one application.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/yanlinsun/onefilemanager.git",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "file",
+    "cloud",
+    "ftp",
+    "nfs"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Yanlin",
+  "license": "MIT-2.0",
   "devDependencies": {
-    "electron": "^5.0.0"
+    "electron": "^5.0.6"
   }
 }

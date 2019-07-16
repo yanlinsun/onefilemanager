@@ -1,0 +1,4 @@
+Windows 10 Quick Access items are located at
+%APPDATA%\Microsoft\Windows\Recent\AutomaticDestinations\f01b4d95cf55d32a.automaticDestinations-ms
+
+It is a binary file.
