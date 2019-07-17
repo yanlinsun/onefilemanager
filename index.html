@@ -5,30 +5,30 @@
     <link href="index.css" rel="stylesheet" type="text/css"></link>
     <title>One File Manager</title>
   </head>
-  <body>
-      <section class="menu">
+  <body class="container-one-column">
+      <section class="menu container-one-row">
       </section>
-      <section class="main">
-          <section class="window">
-              <section class="bar">
+      <section class="window container-one-row">
+          <section class="window container-one-row">
+              <section class="bar container-one-column">
               </section>
-              <section class="file_container">
+              <section class="file-container window container-one-row">
               </section>
           </section>
-          <section class="bar minimized">
+          <section class="bar minimized container-one-column">
           </section>
-          <section class="window">
-              <section class="file_container">
+          <section class="window container-one-row">
+              <section class="file-container window container-one-row">
               </section>
-              <section class="bar">
+              <section class="bar container-one-column">
               </section>
           </section>
       </section>
-      <section class="status">
+      <section class="status container-one-row">
       </section>
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
   </body>
+  <script>
+      // You can also require other files to run in this process
+    require('./renderer.js')
+  </script>
 </html>

@@ -7,7 +7,7 @@ const LocalFileSystem = require('./ofm/fs/LocalFileSystem.js');
 const ListView = require('./ofm/view/ListView.js');
 
 function init() {
-    let containers = document.querySelectorAll(".file_container")
+    let containers = document.querySelectorAll(".file-container")
 
     new ListView(new LocalFileSystem(), containers[0]).showDefaultDir();
     new ListView(new LocalFileSystem(), containers[1]).showDefaultDir();

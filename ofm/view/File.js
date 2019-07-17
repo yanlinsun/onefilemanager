@@ -26,7 +26,7 @@ class File {
                 console.error(err);
             } else {
                 this.size = stats.size;
-                this.date = new Date(stats.ctimeMs).toISOString();
+                this.date = new Date(stats.ctimeMs).toLocaleString();
                 this.type = this.determineType(stats);
                 this.view.showFile(this);
             }

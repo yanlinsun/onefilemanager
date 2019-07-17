@@ -38,38 +38,49 @@
 }
 
 body {
-    font-size: 1.5em;
     line-height: 1.6;
     font-weight: 400;
     font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: var(--color-font);
 
-    display: flex;
-    flex-flow: column;
     width: -webkit-fill-available;
     height: -webkit-fill-available;
     min-width: 640px;
     min-height: 480px;
 }
 
-section {
-    flex: auto;
-    display: flex;
+table {
+    border-spacing: 0px;
+    border-color: var(--color-border);
+    border: 0px;
 }
 
-.container {
+td {
+    border: 0px;
+}
+
+section, div {
+    flex: auto;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.container-one-column {
+    display: flex;
+    flex-flow: column;
+}
+
+.container-one-row {
     display: flex;
     flex-flow: row;
 }
 
 .menu {
+    flex: none;
     background-color: var(--color-g2);
-    max-height: 5em;
-}
-
-.main {
-    flex-flow: row;
-    background-color: var(--color-g1);
+    height: 5em;
 }
 
 .status {
@@ -79,8 +90,11 @@ section {
 }
 
 .window {
-    flex-flow: row;
-    background-color: var(--color-g7);
+    overflow: hidden;
+}
+
+.scrollable {
+    overflow: auto;
 }
 
 .bar {
@@ -94,31 +108,26 @@ section {
     max-width: 2em;
 }
 
-.file_container {
-    display: border-box;
-    overflow-y: auto;
-    background-color: var(--color-g9);
+.file-container {
 }
 
-.file_list {
-    background-color: var(--color-g4);
-    overflow-x: hidden;
-    min-width: fit-content;
+.file-name {
+    min-width: 40px;
+    max-width: 40%;
 }
 
-.file_attr {
-    background-color: var(--color-g5);
+.file-attr {
     overflow-x: auto;
+    min-width: 120px;
+    max-width: 60%;
 }
 
 .item,
 .header {
     flex: none;
-    width: -webkit-fill-available;
-    max-height: 1em + 4px;
-    padding: 0 2px;
-    text-align: center;
+    min-height: fit-content;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .header {
@@ -128,10 +137,31 @@ section {
 
 .header span {
     cursor: hand;
+    margin: 2 0px;
+    word-wrap: nowrap;
 }
 
-.file_attr td {
-    border-right: 1px solid var(--color-border);
+.file-attr table {
+    flex: none;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.fix-header tbody {
+    display: block;
+    overflow: auto;
+    height: 100%;
+}
+
+.file-attr thead tr {
+    display: block;
+    width: 100%;
+}
+
+.file-attr td {
+    border-right: 2px solid var(--color-border);
+    white-space: nowrap;
 }
 
 .align-right {
@@ -140,10 +170,11 @@ section {
 
 .divider {
     flex: none;
-    width: 1px;
-    height: -webkit-fill-available;
-    cursor: move;
+    width: 2px;
+    height: 100%;
+    cursor: col-resize;
     background-color: var(--color-border);
+    float: right;
 }
 
 .sort-icon {
@@ -169,5 +200,5 @@ section {
     --color-g9:     hsl(0,0%,82%);
 
     --color-font:   hsl(0,0%,0%);
-    --color-border: hsl(0,0%,96%);
+    --color-border: hsl(0,0%,88%);
 }
