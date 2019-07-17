@@ -1,0 +1,50 @@
+table {
+    flex: none;
+    padding: 0px;
+}
+
+tr:nth-child(odd) {
+    background-color: var(--color-row-light);
+}
+
+tr:nth-child(even) {
+    background-color: var(--color-row-dark);
+}
+
+td {
+    border-right: 2px solid var(--color-border);
+    white-space: nowrap;
+}
+
+.file-name {
+    min-width: 40px;
+    max-width: 40%;
+}
+
+.file-attr {
+    min-width: 120px;
+    max-width: 60%;
+}
+
+.item,
+.header {
+    flex: none;
+    min-height: fit-content;
+    vertical-align: middle;
+    white-space: nowrap;
+    cursor: default;
+}
+
+td.item {
+    padding: 0px 2px;
+}
+
+.header {
+    font-weight: bold;
+}
+
+.header span {
+    margin: 0px 2px;
+    cursor: default;
+}
+

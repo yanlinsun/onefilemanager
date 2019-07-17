@@ -1,0 +1,17 @@
+:root {
+    /* debug use */
+    --color-g1:     hsl(0,0%,98%);
+    --color-g2:     hsl(0,0%,96%);
+    --color-g3:     hsl(0,0%,94%);
+    --color-g4:     hsl(0,0%,92%);
+    --color-g5:     hsl(0,0%,90%);
+    --color-g6:     hsl(0,0%,88%);
+    --color-g7:     hsl(0,0%,86%);
+    --color-g8:     hsl(0,0%,84%);
+    --color-g9:     hsl(0,0%,82%);
+
+    --color-font:   hsl(0,0%,0%);
+    --color-border: hsl(0,0%,88%);
+    --color-row-light: hsl(0,0%,100%);
+    --color-row-dark: hsl(0,0%,94%);
+}

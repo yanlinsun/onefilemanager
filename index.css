@@ -1,3 +1,6 @@
+@import url(./ofm/css/variable.css);
+@import url(./ofm/css/list-view.css);
+
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
@@ -97,6 +100,32 @@ section, div {
     overflow: auto;
 }
 
+.x-scrollable {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.y-scrollable {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.disable-scrollbars::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+}
+
+.disable-x-scrollbars::-webkit-scrollbar {
+    height: 0px;
+    background: transparent;
+}
+
+.disable-y-scrollbars::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
 .bar {
     background-color: var(--color-g8);
     min-width: 2em;
@@ -109,59 +138,6 @@ section, div {
 }
 
 .file-container {
-}
-
-.file-name {
-    min-width: 40px;
-    max-width: 40%;
-}
-
-.file-attr {
-    overflow-x: auto;
-    min-width: 120px;
-    max-width: 60%;
-}
-
-.item,
-.header {
-    flex: none;
-    min-height: fit-content;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-.header {
-    font-weight: bold;
-    cursor: hand;
-}
-
-.header span {
-    cursor: hand;
-    margin: 2 0px;
-    word-wrap: nowrap;
-}
-
-.file-attr table {
-    flex: none;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
-}
-
-.fix-header tbody {
-    display: block;
-    overflow: auto;
-    height: 100%;
-}
-
-.file-attr thead tr {
-    display: block;
-    width: 100%;
-}
-
-.file-attr td {
-    border-right: 2px solid var(--color-border);
-    white-space: nowrap;
 }
 
 .align-right {
@@ -184,21 +160,6 @@ section, div {
 }
 
 .hide {
-    display: none !important;
+    visibility: hidden !important;
 }
 
-:root {
-    /* debug use */
-    --color-g1:     hsl(0,0%,98%);
-    --color-g2:     hsl(0,0%,96%);
-    --color-g3:     hsl(0,0%,94%);
-    --color-g4:     hsl(0,0%,92%);
-    --color-g5:     hsl(0,0%,90%);
-    --color-g6:     hsl(0,0%,88%);
-    --color-g7:     hsl(0,0%,86%);
-    --color-g8:     hsl(0,0%,84%);
-    --color-g9:     hsl(0,0%,82%);
-
-    --color-font:   hsl(0,0%,0%);
-    --color-border: hsl(0,0%,88%);
-}
