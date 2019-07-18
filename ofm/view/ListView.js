@@ -16,6 +16,42 @@ class ListView {
         this.fs = fs;
         this.dom = p;
         this.createUI(p);
+        this.registerListener();
+    }
+
+    registerListener() {
+        let attrList = this.dom.querySelector("#file-attr-list");
+        let nameList = this.dom.querySelector("#file-name-list");
+        let headerList = this.dom.querySelector("#attr-header-list");
+        attrList.onscroll = () => {
+            nameList.scrollTop = attrList.scrollTop;
+            headerList.scrollLeft = attrList.scrollLeft;
+        };
+        nameList.onscroll = () => attrList.scrollTop = nameList.scrollTop;
+        window.addEventListener("resize", () => this.windowResized());
+    }
+
+    windowResized() {
+        let attr = this.dom.querySelector("#file-attr-list");
+        let box = attr.getBoundingClientRect();
+        let vsw = box.width - attr.clientWidth + 1;
+        let hsh = box.height - attr.clientHeight + 1;
+        let nameph = this.dom.querySelector("#file-name-list").nextSibling;
+        let headerph = this.dom.querySelector("#attr-header-list>.placeholder");
+        nameph.style.height = hsh + "px";
+        headerph.style.width = vsw + "px";
+    }
+
+    adjustPlaceholders() {
+        let name = this.dom.querySelector("#file-name-list");
+        let nameph = name.nextSibling;
+        nameph.style.width = name.offsetWidth + "px";
+
+        let header = this.dom.querySelector("#attr-header-list");
+        let headerph = header.querySelector(".placeholder");
+        headerph.style.height = header.offsetHeight + "px";
+
+        this.windowResized();
     }
 
     createUI(p) {
@@ -41,12 +77,19 @@ class ListView {
         c.classList.add("y-scrollable");
         c.classList.add("disable-y-scrollbars");
         p.appendChild(c);
+
+        // for same height with attr if it has scroll bar
+        let c2 = document.createElement("div");
+        c2.classList.add("placeholder");
+        p.appendChild(c2);
+
         p = c;
 
         c = document.createElement("table");
         p.appendChild(c);
 
         this.list = c;
+
     }
 
     createAttr(p) {
@@ -60,6 +103,12 @@ class ListView {
         this.createHeader(c, "Size");
         this.createHeader(c, "Date");
         this.createHeader(c, "Type");
+
+        // for same width with table if file-attr-list has scroll bar
+        let c2 = document.createElement("div");
+        c2.classList.add("placeholder");
+        c.appendChild(c2);
+
         p.appendChild(c);
 
         c = document.createElement("div")
@@ -115,16 +164,14 @@ class ListView {
     }
 
     adjustUI() {
-        let attrList = this.dom.querySelector("#file-attr-list");
-        attrList.onscroll = () => this.scrollAttr();
         let headers = this.dom.querySelectorAll("#attr-header-list>.header");
         let attrs = this.dom.querySelectorAll("#file-attr-list tr:nth-child(1)>td");
         let tw = 0;
         attrs.forEach((td, i) => {
-            let w = Math.max(headers[i].getBoundingClientRect().width, td.getBoundingClientRect().width);
-            tw += w + 2;
+            let w = Math.max(headers[i].getBoundingClientRect().width + 2, td.getBoundingClientRect().width);
+            tw += w;
             headers[i].style.width = w + "px";
-            td.style.width = w + 2 + "px"; // divider width
+            td.style.width = w + "px"; // divider width
         });
         this.dom.querySelector("#file-attr-list table").style.width = tw + "px";
         this.dom.querySelectorAll("#file-attr-list tr").forEach((tr, i) => {
@@ -132,17 +179,9 @@ class ListView {
                 Array.from(tr.cells).forEach((td, j) => td.style.width = tr.previousSibling.cells[j].style.width);
             }
         });
-    }
 
-    scrollAttr() {
-        let attr = this.dom.querySelector("#file-attr-list");
-        let name = this.dom.querySelector("#file-name-list");
-        name.scrollTop = attr.scrollTop;
-        let header = this.dom.querySelector("#attr-header-list");
-        header.scrollLeft = attr.scrollLeft;
-        console.log(attr.scrollLeft + ", " + attr.scrollTop);
+        this.adjustPlaceholders();
     }
-
 
     showFile(f) {
         this.createName(f.name);

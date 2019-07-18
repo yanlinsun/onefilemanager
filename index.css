@@ -159,6 +159,13 @@ section, div {
     padding-right: 3px;
 }
 
+.placeholder {
+    flex: none;
+    background-color: transparent;
+    width: 0px;
+    height: 0px;
+}
+
 .hide {
     visibility: hidden !important;
 }
