@@ -15,11 +15,13 @@ class File {
         this.fullpath = path.resolve(dir, file);
         this.name = path.basename(file);
         this.ext = path.extname(file);
-        if (this.name == '..') {
+        if (this.name == '..' || this.name == '.') {
             this.size = '-';
             this.date = '-';
             this.type = '-';
+            this.isDirectory = true;
         }
+        this.children = [];
     }
 
     async loadAttr() {
@@ -31,6 +33,7 @@ class File {
                     this.size = stats.size;
                     this.date = new Date(stats.ctimeMs).toLocaleString();
                     this.type = this.determineType(stats);
+                    this.isDirectory = stats.isDirectory();
                     resolve(this);
                 }
             });
@@ -42,6 +45,10 @@ class File {
             return "Directory";
         }
         return Types[this.ext] || Types[""];
+    }
+
+    add(f) {
+        this.children.add(f);
     }
 }
 

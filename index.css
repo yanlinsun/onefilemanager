@@ -166,7 +166,11 @@ section, div {
     height: 0px;
 }
 
-.hide {
+.invisible {
     visibility: hidden !important;
+}
+
+.hide {
+    display: none !important;
 }
 

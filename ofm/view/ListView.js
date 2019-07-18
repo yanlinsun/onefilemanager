@@ -11,11 +11,22 @@ const FileAttr = {
 }
 
 class ListView {
-    constructor(fs, p) {
+    constructor(fs, p, dir) {
+        console.log("ListView: " + dir.fullpath);
         this.fs = fs;
-        this.dom = p;
-        this.createUI(p);
+        let c = document.createElement("div")
+        c.classList.add("window");
+        c.classList.add("container-one-row");
+        p.appendChild(c);
+        this.dom = c;
+        this.createUI(c);
         this.registerListener();
+        if (!p.views) {
+            p.views = new Map();
+        }
+        p.views.set(dir.fullpath, this);
+        dir.children.forEach(f => this.displayFile(f));
+        this.adjustUI();
     }
 
     registerListener() {
@@ -143,20 +154,10 @@ class ListView {
 
         c = document.createElement("i");
         c.classList.add("material-icons");
-        c.classList.add("hide");
+        c.classList.add("invisible");
         c.classList.add("sort-icon");
         c.innerText = "keyboard_arrow_down";
         p.appendChild(c);
-    }
-
-    async showDir(dir) {
-        try {
-            let files = await this.fs.listDir(dir);
-            files.forEach(f => this.showFile(f));
-        } catch (err) {
-            console.error(err);
-        }
-        this.adjustUI();
     }
 
     adjustUI() {
@@ -179,7 +180,7 @@ class ListView {
         this.adjustPlaceholders();
     }
 
-    showFile(f) {
+    displayFile(f) {
         let namerow = this.list.insertRow();
         this.createItem(namerow, f.name);
         let attrrow = this.attr.insertRow();
@@ -203,9 +204,39 @@ class ListView {
                 attrrow.classList.add("select");
             }
         }
+        namerow.ondblclick = () => {
+            this.open(f);
+        }
         attrrow.onmouseover = namerow.onmouseover;
         attrrow.onmouseout = namerow.onmouseout;
         attrrow.onclick = namerow.onclick;
+        attrrow.ondblclick = namerow.ondblclick;
+    }
+
+    async open(f) {
+        if (f.isDirectory) {
+            if (f.children.length == 0) {
+                try {
+                    await this.fs.listDir(f);
+                } catch (err) {
+                    // permission issue, or timeout
+                    // TODO display error in status bar
+                    return;
+                }
+            }
+            let view = this.dom.parentNode.views.get(f.fullpath);
+            if (!view) {
+                this.dom.classList.add("hide");
+                new ListView(this.fs, this.dom.parentNode, f);
+            } else {
+                this.dom.classList.add("hide");
+                view.show();
+            }
+        }
+    }
+
+    show() {
+        this.dom.classList.remove("hide");
     }
 
     createItem(p, value) {

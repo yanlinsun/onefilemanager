@@ -3,17 +3,17 @@
 // All of the Node.js APIs are available in this process.
 'use strict';
 
-const os = require('os');
 const LocalFileSystem = require('./ofm/fs/LocalFileSystem.js');
 const ListView = require('./ofm/view/ListView.js');
 
-function init() {
+async function init() {
     let containers = document.querySelectorAll(".file-container")
-    let dir = os.homedir();
-    let lfs = new LocalFileSystem();
+    let fs = new LocalFileSystem();
+    let dir = fs.homeDir();
+    await fs.listDir(dir);
 
-    new ListView(lfs, containers[0]).showDir(dir);
-    new ListView(lfs, containers[1]).showDir(dir);
+    new ListView(fs, containers[0], dir);
+    new ListView(fs, containers[1], dir);
 }
 
 init();
