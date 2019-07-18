@@ -180,25 +180,35 @@ class ListView {
     }
 
     showFile(f) {
-        this.createName(f.name);
-        let row = this.attr.insertRow();
-        this.createItem(row, f.size);
-        this.createItem(row, f.date);
-        this.createItem(row, f.type);
-    }
-
-    createName(name) {
-//        let c = document.createElement("div");
-//        c.classList.add("item");
-        let c = this.list.insertRow().insertCell();
-        c.classList.add("item");
-        c.innerText = name;
+        let namerow = this.list.insertRow();
+        this.createItem(namerow, f.name);
+        let attrrow = this.attr.insertRow();
+        this.createItem(attrrow, f.size);
+        this.createItem(attrrow, f.date);
+        this.createItem(attrrow, f.type);
+        namerow.onmouseover = () => {
+            namerow.classList.add("hover");
+            attrrow.classList.add("hover");
+        };
+        namerow.onmouseout = () => {
+            namerow.classList.remove("hover");
+            attrrow.classList.remove("hover");
+        };
+        namerow.onclick = () => {
+            if (namerow.classList.contains("select")) {
+                namerow.classList.remove("select");
+                attrrow.classList.remove("select");
+            } else {
+                namerow.classList.add("select");
+                attrrow.classList.add("select");
+            }
+        }
+        attrrow.onmouseover = namerow.onmouseover;
+        attrrow.onmouseout = namerow.onmouseout;
+        attrrow.onclick = namerow.onclick;
     }
 
     createItem(p, value) {
-//        let c = document.createElement("div");
-//        c.className.add("item");
-//        p.appendChild(c);
         let c = p.insertCell();
         c.classList.add("item");
         c.innerText = value;

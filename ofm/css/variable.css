@@ -14,4 +14,6 @@
     --color-border: hsl(0,0%,88%);
     --color-row-light: hsl(0,0%,100%);
     --color-row-dark: hsl(0,0%,94%);
+    --color-row-hover: hsl(211, 100%, 95%);
+    --color-row-select: hsl(220, 100%, 70%);
 }

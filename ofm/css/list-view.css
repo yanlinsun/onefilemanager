@@ -16,6 +16,14 @@ td {
     white-space: nowrap;
 }
 
+tr.hover {
+    background-color: var(--color-row-hover);
+}
+
+tr.select {
+    background-color: var(--color-row-select);
+}
+
 .file-name {
     min-width: 40px;
     max-width: 40%;
