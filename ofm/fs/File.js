@@ -12,9 +12,14 @@ const Types = {
 
 class File {
     constructor(dir, file) {
-        this.fullpath = path.join(dir, file);
+        this.fullpath = path.resolve(dir, file);
         this.name = path.basename(file);
         this.ext = path.extname(file);
+        if (this.name == '..') {
+            this.size = '-';
+            this.date = '-';
+            this.type = '-';
+        }
     }
 
     async loadAttr() {

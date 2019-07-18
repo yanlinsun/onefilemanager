@@ -1,14 +1,16 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
+const File = require('./File.js');
 
 class LocalFileSystem {
     constructor() {
     }
 
-    async listDir(path) {
+    async listDir(dir) {
         let p = new Promise((resolve, reject) => {
-            fs.readdir(path, { withFileTypes: false }, (err, files) => {
+            fs.readdir(dir, { withFileTypes: false }, (err, files) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -17,7 +19,15 @@ class LocalFileSystem {
 
             });
         });
-        return await p;
+        let files = await p;
+        files = files.map(f => new File(dir, f).loadAttr());
+        files = await Promise.all(files);
+        let parentDir = path.resolve(dir, '..');
+        if (parentDir != dir) {
+            let parentFile = new File(dir, '..');
+            files = [parentFile, ...files];
+        }
+        return files;
     }
 }
 

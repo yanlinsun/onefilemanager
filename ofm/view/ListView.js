@@ -1,7 +1,6 @@
 'use strict';
 
 const os = require('os');
-const File = require('./File.js');
 
 const FileAttr = {
     Name: "name",
@@ -150,12 +149,9 @@ class ListView {
         p.appendChild(c);
     }
 
-    async showDefaultDir() {
+    async showDir(dir) {
         try {
-            let dir = os.homedir();
             let files = await this.fs.listDir(dir);
-            files = files.map(f => new File(dir, f).loadAttr());
-            files = await Promise.all(files);
             files.forEach(f => this.showFile(f));
         } catch (err) {
             console.error(err);
