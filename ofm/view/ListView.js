@@ -175,7 +175,7 @@ class ListView {
     }
 
     createHeader(p, name, sortAttr) {
-        let i = this.createIcon("keyboard_arror_down");
+        let i = this.createIcon("keyboard_arrow_down");
         i.classList.add("invisible");
         i.classList.add("sort-icon");
 
