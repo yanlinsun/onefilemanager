@@ -1,6 +1,7 @@
 'use strict';
 
 const os = require('os');
+const filesize = require('filesize');
 
 const FileAttr = {
     Name: "name",
@@ -244,7 +245,7 @@ class ListView {
         this.createItem(namerow, f.name);
         let attrrow = this.attrList.insertRow();
         namerow.attr = attrrow;
-        this.createItem(attrrow, f.size, true);
+        this.createItem(attrrow, isNaN(f.size) ? f.size : filesize(f.size), true);
         this.createItem(attrrow, f.date);
         this.createItem(attrrow, f.type);
         namerow.onmouseover = () => {
