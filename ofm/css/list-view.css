@@ -46,7 +46,6 @@ tr.select {
     vertical-align: middle;
     white-space: nowrap;
     cursor: default;
-    flex-flow: row;
 }
 
 td.item {

@@ -2,6 +2,7 @@
 
 const os = require('os');
 const filesize = require('filesize');
+const { ExtFileType, TypeIcon } = require('../fs/FileType.js');
 
 const FileAttr = {
     Name: "name",
@@ -166,12 +167,17 @@ class ListView {
         this.attrList = tbody;
     }
 
-    createHeader(p, name, sortAttr) {
+    createIcon(icon) {
         let i = document.createElement("i");
         i.classList.add("material-icons");
+        i.innerText = icon;
+        return i;
+    }
+
+    createHeader(p, name, sortAttr) {
+        let i = this.createIcon("keyboard_arror_down");
         i.classList.add("invisible");
         i.classList.add("sort-icon");
-        i.innerText = "keyboard_arrow_down";
 
         let c = document.createElement("div");
         c.classList.add("header");
@@ -242,7 +248,13 @@ class ListView {
     displayFile(f) {
         let namerow = this.nameList.insertRow();
         namerow.file = f;
-        this.createItem(namerow, f.name);
+        let icon = "default";
+        if (f.isDirectory) {
+            icon = "folder";
+        } else if (ExtFileType[f.ext]) {
+            icon = ExtFileType[f.ext];
+        }
+        this.createItem(namerow, f.name, false, TypeIcon[icon]);
         let attrrow = this.attrList.insertRow();
         namerow.attr = attrrow;
         this.createItem(attrrow, isNaN(f.size) ? f.size : filesize(f.size), true);
@@ -301,9 +313,17 @@ class ListView {
         this.dom.classList.remove("hide");
     }
 
-    createItem(p, value, rightAlign) {
+    createItem(p, value, rightAlign, icon) {
         let c = p.insertCell();
         c.classList.add("item");
+        if (icon) {
+            let i = this.createIcon(icon);
+            c.appendChild(i);
+        }
+        p = c;
+
+        c = document.createElement("SPAN");
+        p.appendChild(c);
         if (rightAlign) {
             c.classList.add("align-right");
         }
