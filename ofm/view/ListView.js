@@ -135,7 +135,7 @@ class ListView {
     createAttr(p) {
         let c = document.createElement("div");
         c.id = "attr-header-list";
-        c.classList.add("header");
+        c.classList.add("header-container");
         c.classList.add("container-one-row");
         c.classList.add("x-scrollable");
         c.classList.add("disable-x-scrollbars");
@@ -166,9 +166,15 @@ class ListView {
     }
 
     createHeader(p, name, sortAttr) {
+        let i = document.createElement("i");
+        i.classList.add("material-icons");
+        i.classList.add("invisible");
+        i.classList.add("sort-icon");
+        i.innerText = "keyboard_arrow_down";
+
         let c = document.createElement("div");
         c.classList.add("header");
-        c.onclick = () => this.sort(c, sortAttr);
+        c.onclick = () => this.sort(i, sortAttr);
         c.asc = undefined;
         p.appendChild(c);
         p = c;
@@ -179,15 +185,9 @@ class ListView {
 
         c = document.createElement("div");
         c.classList.add("divider");
-        // TODO
         p.appendChild(c);
 
-        c = document.createElement("i");
-        c.classList.add("material-icons");
-        c.classList.add("invisible");
-        c.classList.add("sort-icon");
-        c.innerText = "keyboard_arrow_down";
-        p.appendChild(c);
+        p.appendChild(i);
     }
 
     sort(header, attr) {
@@ -195,6 +195,18 @@ class ListView {
             header.asc = false;
         }
         let asc = header.asc = !header.asc;
+        let icons = this.dom.querySelectorAll(".header i");
+        icons.forEach(i => {
+            if (!i.classList.contains("invisible")) {
+                i.classList.add("invisible");
+            }
+        });
+        header.classList.remove("invisible");
+        if (asc) {
+            header.innerText = "keyboard_arrow_up";
+        } else {
+            header.innerText = "keyboard_arrow_down";
+        }
         Array.from(this.nameList.rows).slice(1).sort((a, b) => ((v1, v2) => {
             return v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? 
                 v1 - v2 : 
@@ -232,7 +244,7 @@ class ListView {
         this.createItem(namerow, f.name);
         let attrrow = this.attrList.insertRow();
         namerow.attr = attrrow;
-        this.createItem(attrrow, f.size);
+        this.createItem(attrrow, f.size, true);
         this.createItem(attrrow, f.date);
         this.createItem(attrrow, f.type);
         namerow.onmouseover = () => {
@@ -288,9 +300,12 @@ class ListView {
         this.dom.classList.remove("hide");
     }
 
-    createItem(p, value) {
+    createItem(p, value, rightAlign) {
         let c = p.insertCell();
         c.classList.add("item");
+        if (rightAlign) {
+            c.classList.add("align-right");
+        }
         c.innerText = value;
     }
 }
