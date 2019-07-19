@@ -95,6 +95,7 @@ class ListView {
 
     createUI(p) {
         let c = document.createElement("div");
+        c.id = "name-header";
         c.classList.add("file-name");
         c.classList.add("container-one-column");
         this.createList(c);
@@ -108,7 +109,7 @@ class ListView {
     }
 
     createList(p) {
-        this.createHeader(p, "Name");
+        this.createHeader(p, "Name", "name");
 
         let c = document.createElement("div");
         c.id = "file-name-list";
@@ -127,7 +128,7 @@ class ListView {
         c = document.createElement("table");
         p.appendChild(c);
 
-        this.list = c;
+        this.nameList = c;
 
     }
 
@@ -139,9 +140,9 @@ class ListView {
         c.classList.add("x-scrollable");
         c.classList.add("disable-x-scrollbars");
         // TODO i18n
-        this.createHeader(c, "Size");
-        this.createHeader(c, "Date");
-        this.createHeader(c, "Type");
+        this.createHeader(c, "Size", "size");
+        this.createHeader(c, "Date", "date");
+        this.createHeader(c, "Type", "type");
 
         // for same width with table if file-attr-list has scroll bar
         let c2 = document.createElement("div");
@@ -161,13 +162,13 @@ class ListView {
 
         let tbody = c.createTBody();
        
-        this.attr = tbody;
+        this.attrList = tbody;
     }
 
-    createHeader(p, name) {
+    createHeader(p, name, sortAttr) {
         let c = document.createElement("div");
         c.classList.add("header");
-        c.onclick = () => this.sort(name);
+        c.onclick = () => this.sort(c, sortAttr);
         c.asc = undefined;
         p.appendChild(c);
         p = c;
@@ -189,6 +190,24 @@ class ListView {
         p.appendChild(c);
     }
 
+    sort(header, attr) {
+        if (header.asc === undefined) {
+            header.asc = false;
+        }
+        let asc = header.asc = !header.asc;
+        Array.from(this.nameList.rows).slice(1).sort((a, b) => ((v1, v2) => {
+            return v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? 
+                v1 - v2 : 
+                v1.localeCompare(v2);
+        })(
+            asc ? a.file[attr] : b.file[attr], 
+            asc ? b.file[attr] : a.file[attr]
+        )).forEach((tr, i) => {
+            this.nameList.appendChild(tr);
+            this.attrList.appendChild(tr.attr);
+        });
+    }
+
     adjustUI() {
         let headers = this.dom.querySelectorAll("#attr-header-list>.header");
         let attrs = this.dom.querySelectorAll("#file-attr-list tr:nth-child(1)>td");
@@ -208,9 +227,11 @@ class ListView {
     }
 
     displayFile(f) {
-        let namerow = this.list.insertRow();
+        let namerow = this.nameList.insertRow();
+        namerow.file = f;
         this.createItem(namerow, f.name);
-        let attrrow = this.attr.insertRow();
+        let attrrow = this.attrList.insertRow();
+        namerow.attr = attrrow;
         this.createItem(attrrow, f.size);
         this.createItem(attrrow, f.date);
         this.createItem(attrrow, f.type);
