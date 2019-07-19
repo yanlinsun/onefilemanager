@@ -215,9 +215,11 @@ class ListView {
             header.innerText = "keyboard_arrow_down";
         }
         Array.from(this.nameList.rows).slice(1).sort((a, b) => ((v1, v2) => {
-            return v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? 
-                v1 - v2 : 
-                v1.localeCompare(v2);
+            if (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)) { 
+                return v1 - v2; 
+            } else {
+                return v1.localeCompare(v2);
+            }
         })(
             asc ? a.file[attr] : b.file[attr], 
             asc ? b.file[attr] : a.file[attr]
@@ -327,7 +329,11 @@ class ListView {
         if (rightAlign) {
             c.classList.add("align-right");
         }
-        c.innerText = value;
+        if (value instanceof Date) {
+            c.innerText = value.toLocaleString();
+        } else {
+            c.innerText = value;
+        }
     }
 }
 

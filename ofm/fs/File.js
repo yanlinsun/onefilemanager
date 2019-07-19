@@ -32,7 +32,7 @@ class File {
                     resolve(this);
                 } else {
                     this.size = stats.size;
-                    this.date = new Date(stats.ctimeMs).toLocaleString();
+                    this.date = new Date(stats.ctimeMs);
                     this.type = this.determineType(stats);
                     this.isDirectory = stats.isDirectory();
                     resolve(this);
