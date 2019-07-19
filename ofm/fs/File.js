@@ -15,10 +15,11 @@ class File {
         this.fullpath = path.resolve(dir, file);
         this.name = path.basename(file);
         this.ext = path.extname(file);
+        this.size = '-';
+        this.date = '-';
+        this.type = '-';
+        this.isDirectory = false;
         if (this.name == '..' || this.name == '.') {
-            this.size = '-';
-            this.date = '-';
-            this.type = '-';
             this.isDirectory = true;
         }
         this.children = [];
@@ -28,7 +29,7 @@ class File {
         return new Promise((resolve, reject) => {
             fs.stat(this.fullpath, (err, stats) => {
                 if (err) {
-                    reject(err);
+                    resolve(this);
                 } else {
                     this.size = stats.size;
                     this.date = new Date(stats.ctimeMs).toLocaleString();

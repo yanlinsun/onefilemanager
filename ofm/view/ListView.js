@@ -12,7 +12,6 @@ const FileAttr = {
 
 class ListView {
     constructor(fs, p, dir) {
-        console.log("ListView: " + dir.fullpath);
         this.fs = fs;
         let c = document.createElement("div")
         c.classList.add("window");
@@ -26,7 +25,8 @@ class ListView {
         }
         p.views.set(dir.fullpath, this);
         dir.children.forEach(f => this.displayFile(f));
-        this.adjustUI();
+        this.adjustPlaceholders();
+        window.setTimeout(() => this.adjustUI(), 0);
     }
 
     registerListener() {
@@ -205,8 +205,6 @@ class ListView {
                 Array.from(tr.cells).forEach((td, j) => td.style.width = tr.previousSibling.cells[j].style.width);
             }
         });
-
-        this.adjustPlaceholders();
     }
 
     displayFile(f) {
@@ -250,6 +248,7 @@ class ListView {
                 } catch (err) {
                     // permission issue, or timeout
                     // TODO display error in status bar
+                    console.error(err);
                     return;
                 }
             }
