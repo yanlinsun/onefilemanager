@@ -34,10 +34,39 @@ class ListView {
         let nameList = this.dom.querySelector("#file-name-list");
         let headerList = this.dom.querySelector("#attr-header-list");
         attrList.onscroll = () => {
-            nameList.scrollTop = attrList.scrollTop;
-            headerList.scrollLeft = attrList.scrollLeft;
+            if (attrList.ignoreScrollEvent) {
+                attrList.ignoreScrollEvent = false;
+                return;
+            }
+            if (nameList.scrollTop != attrList.scrollTop) { 
+                nameList.ignoreScrollEvent = true;
+                nameList.scrollTop = attrList.scrollTop;
+            }
+            if (headerList.scrollLeft != attrList.scrollLeft) {
+                headerList.ignoreScrollEvent = true;
+                headerList.scrollLeft = attrList.scrollLeft;
+            }
         };
-        nameList.onscroll = () => attrList.scrollTop = nameList.scrollTop;
+        nameList.onscroll = () => {
+            if (nameList.ignoreScrollEvent) {
+                nameList.ignoreScrollEvent = false;
+                return;
+            }
+            if (attrList.scrollTop != nameList.scrollTop) {
+                attrList.ignoreScrollEvent = true;
+                attrList.scrollTop = nameList.scrollTop;
+            }
+        };
+        headerList.onscroll = () => {
+            if (headerList.ignoreScrollEvent) {
+                headerList.ignoreScrollEvent = false;
+                return;
+            }
+            if (headerList.scrollLeft != attrList.scrollLeft) {
+                attrList.ignoreScrollEvent = true;
+                attrList.scrollLeft = headerList.scrollLeft;
+            }
+        };
         window.addEventListener("resize", () => this.windowResized());
     }
 

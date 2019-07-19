@@ -93,6 +93,7 @@ section, div {
 }
 
 .window {
+    width:100%;
     overflow: hidden;
 }
 
@@ -101,13 +102,13 @@ section, div {
 }
 
 .x-scrollable {
-    overflow-y: hidden;
+    overflow-y: visible;
     overflow-x: scroll;
 }
 
 .y-scrollable {
     overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-x: visible;
 }
 
 .disable-scrollbars::-webkit-scrollbar {

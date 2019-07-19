@@ -37,7 +37,7 @@ tr.select {
 .item,
 .header {
     flex: none;
-    min-height: fit-content;
+    height: fit-content;
     vertical-align: middle;
     white-space: nowrap;
     cursor: default;
