@@ -315,6 +315,8 @@ class ListView {
                 this.dom.classList.add("hide");
                 view.show();
             }
+        } else {
+            this.fs.open(f);
         }
     }
 

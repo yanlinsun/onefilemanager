@@ -4,6 +4,7 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const File = require('./File.js');
+const shell = require('electron').shell;
 
 class LocalFileSystem {
     constructor() {
@@ -50,6 +51,14 @@ class LocalFileSystem {
         }
         dir.children = files;
         return files;
+    }
+
+    async open(file) {
+        if (file.isDirectory) {
+            throw new Error(file.fullpath + " is not a file");
+        }
+        console.log("open: " + file.fullpath);
+        shell.openItem(file.fullpath);
     }
 }
 
