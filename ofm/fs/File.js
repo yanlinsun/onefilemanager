@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const hidefile = require('hidefile');
 
 const Types = {
     "sh": "Shell Script",
@@ -19,6 +20,7 @@ class File {
         this.date = '-';
         this.type = '-';
         this.isDirectory = false;
+        this.isHidden = false;
         if (this.name == '..' || this.name == '.') {
             this.isDirectory = true;
         }
@@ -27,16 +29,19 @@ class File {
 
     async loadAttr() {
         return new Promise((resolve, reject) => {
-            fs.stat(this.fullpath, (err, stats) => {
-                if (err) {
-                    resolve(this);
-                } else {
-                    this.size = stats.size;
-                    this.date = new Date(stats.ctimeMs);
-                    this.type = this.determineType(stats);
-                    this.isDirectory = stats.isDirectory();
-                    resolve(this);
-                }
+            hidefile.isHidden(this.fullpath, (err, flag) => {
+                this.isHidden = flag;
+                fs.stat(this.fullpath, (err, stats) => {
+                    if (err) {
+                        resolve(this);
+                    } else {
+                        this.size = stats.size;
+                        this.date = new Date(stats.ctimeMs);
+                        this.type = this.determineType(stats);
+                        this.isDirectory = stats.isDirectory();
+                        resolve(this);
+                    }
+                });
             });
         });
     }

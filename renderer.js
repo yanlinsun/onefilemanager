@@ -5,6 +5,9 @@
 
 const LocalFileSystem = require('./ofm/fs/LocalFileSystem.js');
 const ListView = require('./ofm/view/ListView.js');
+const Configuration = require('./ofm/config/configuration.js');
+
+window.ofmconfig = Configuration.load();
 
 async function init() {
     let containers = document.querySelectorAll(".file-container")

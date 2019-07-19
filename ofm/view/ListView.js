@@ -248,6 +248,9 @@ class ListView {
     }
 
     displayFile(f) {
+        if (f.isHidden && !ofmconfig.showHidden) {
+            return;
+        }
         let namerow = this.nameList.insertRow();
         namerow.file = f;
         let icon = "default";
@@ -256,12 +259,16 @@ class ListView {
         } else if (ExtFileType[f.ext]) {
             icon = ExtFileType[f.ext];
         }
-        this.createItem(namerow, f.name, false, TypeIcon[icon]);
+        let itemOption = { rightAlign: false, icon: TypeIcon[icon], hidden: f.isHidden };
+        this.createItem(namerow, f.name, itemOption);
         let attrrow = this.attrList.insertRow();
         namerow.attr = attrrow;
-        this.createItem(attrrow, isNaN(f.size) ? f.size : filesize(f.size), true);
-        this.createItem(attrrow, f.date);
-        this.createItem(attrrow, f.type);
+        itemOption.icon = null;
+        itemOption.rightAlign = true;
+        this.createItem(attrrow, isNaN(f.size) ? f.size : filesize(f.size), itemOption);
+        itemOption.rightAlign = false;
+        this.createItem(attrrow, f.date, itemOption);
+        this.createItem(attrrow, f.type, itemOption);
         namerow.onmouseover = () => {
             namerow.classList.add("hover");
             attrrow.classList.add("hover");
@@ -315,19 +322,26 @@ class ListView {
         this.dom.classList.remove("hide");
     }
 
-    createItem(p, value, rightAlign, icon) {
+    createItem(p, value, option) {
         let c = p.insertCell();
         c.classList.add("item");
-        if (icon) {
-            let i = this.createIcon(icon);
+        let i = null;
+        if (option.icon) {
+            i = this.createIcon(option.icon);
             c.appendChild(i);
         }
         p = c;
 
         c = document.createElement("SPAN");
         p.appendChild(c);
-        if (rightAlign) {
+        if (option.rightAlign) {
             c.classList.add("align-right");
+        }
+        if (option.hidden) {
+            if (i) {
+                i.classList.add("hidden-file");
+            }
+            c.classList.add("hidden-file");
         }
         if (value instanceof Date) {
             c.innerText = value.toLocaleString();

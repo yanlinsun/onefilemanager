@@ -61,3 +61,6 @@ td.item {
     cursor: default;
 }
 
+.hidden-file {
+    color: var(--color-file-hidden);
+}
