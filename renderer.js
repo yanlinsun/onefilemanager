@@ -12,11 +12,18 @@ window.ofmconfig = Configuration.load();
 async function init() {
     let containers = document.querySelectorAll(".file-container")
     let fs = new LocalFileSystem();
-    let dir = fs.homeDir();
-    await fs.listDir(dir);
+    let left = ofmconfig.Tabs.Active.Left;
+    let right = ofmconfig.Tabs.Active.Right;
+    let dirLeft = await fs.getDir(left); 
+    let dirRight = null;
+    if (left == right) {
+        dirRight = dirLeft;
+    } else {
+        dirRight = await fs.getDir(right);
+    }
 
-    new ListView(fs, containers[0], dir);
-    new ListView(fs, containers[1], dir);
+    new ListView(fs, containers[0], dirLeft);
+    new ListView(fs, containers[1], dirRight);
 }
 
 init();

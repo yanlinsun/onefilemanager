@@ -1,0 +1,7 @@
+[General]
+ShowHidden = true
+
+[Tabs]
+Left = [ '/user/sunyanlin' ]
+Right = [ '/user/sunyanlin/Documents/workspace/onefilemanager' ]
+

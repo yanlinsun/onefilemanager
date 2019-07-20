@@ -248,7 +248,7 @@ class ListView {
     }
 
     displayFile(f) {
-        if (f.isHidden && !ofmconfig.showHidden) {
+        if (f.isHidden && !ofmconfig.General.ShowHidden) {
             return;
         }
         let namerow = this.nameList.insertRow();

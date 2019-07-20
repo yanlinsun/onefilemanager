@@ -15,6 +15,12 @@ class LocalFileSystem {
         return new File(dir, '.');
     }
 
+    async getDir(fullpath) {
+        let f = new File(fullpath, '.');
+        await this.listDir(f);
+        return f;
+    }
+
     async listDir(dir) {
         if (!dir instanceof File) {
             throw new Error("listDir require parameter type of File");
