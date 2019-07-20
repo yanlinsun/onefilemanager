@@ -33,26 +33,22 @@ async function start() {
     let rightTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[1]));
     leftTabs = await Promise.all(leftTabs);
     rightTabs = await Promise.all(rightTabs);
-    let f = false;
-    for (let t of leftTabs.values()) {
-        if (t.dir == ofmconfig.Tabs.Active.Left) {
-            f = true;
-            t.show();
+    let left, right;
+    for (left of leftTabs.values()) {
+        if (left.dir == ofmconfig.Tabs.Active.Left) {
+            break;
         }
     }
-    if (!f) {
-        leftTabs[0].show();
-    }
-    f = false;
-    for (let t of rightTabs.values()) {
-        if (t.dir == ofmconfig.Tabs.Active.Right) {
-            f = true;
-            t.show();
+    left.show();
+    window.currentTab = left;
+    for (right of rightTabs.values()) {
+        if (right.dir == ofmconfig.Tabs.Active.Right) {
+            break;
         }
     }
-    if (!f) {
-        rightTabs[0].show();
-    }
+    right.show();
+    window.opsiteTab = right;
+    right.blur();
 }
 
 module.exports = {

@@ -17,4 +17,5 @@
     --color-row-hover: hsl(211, 100%, 95%);
     --color-row-select: hsl(220, 100%, 70%);
     --color-file-hidden : hsl(0,0%,50%);
+    --color-focus: hsl(220,10%,70%);
 }

@@ -1,12 +1,14 @@
 'use strict';
 
 const FileShortcut = require('./FileShortcut.js');
+const TabShortcut = require('./TabShortcut.js');
 
 class Shortcut {
     constructor() {
         this.mapping = new Map();
         this.keys = new Array();
         new FileShortcut((key, fn) => this.register(key, fn));
+        new TabShortcut((key, fn) => this.register(key, fn));
         document.addEventListener("keydown", e => this.handleDown(e));
         document.addEventListener("keyup", e => this.handleUp(e));
     }

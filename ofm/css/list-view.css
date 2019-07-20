@@ -48,6 +48,10 @@ tr.select {
     cursor: default;
 }
 
+.focus .header {
+    background-color: var(--color-focus);
+}
+
 td.item {
     padding: 0px 2px;
 }

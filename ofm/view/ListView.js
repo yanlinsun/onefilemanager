@@ -312,16 +312,34 @@ class ListView {
             if (!view) {
                 view = new ListView(this.fs, this.dom.parentNode, f);
             }
-            this.dom.classList.add("hide");
+            this.hide();
             view.show();
         } else {
             this.fs.open(f);
         }
     }
 
+    isFocused() {
+        return this.dom.classList.contains("focus");
+    }
+
+    hide() {
+        this.dom.classList.add("hide");
+        this.blur();
+    }
+
     show() {
         this.dom.classList.remove("hide");
         window.setTimeout(() => this.adjustUI(), 0);
+        this.focus();
+    }
+
+    focus() {
+        this.dom.classList.add("focus");
+    }
+
+    blur() {
+        this.dom.classList.remove("focus");
     }
 
     createItem(p, value, option) {

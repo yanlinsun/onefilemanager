@@ -1,7 +1,5 @@
 'use strict';
 
-const { globalShortcut } = require('electron');
-
 class FileShortcut {
     constructor(r) {
         let key = ofmconfig.KeyMapping.File;
