@@ -20,6 +20,7 @@ class ListView {
         c.classList.add("container-one-row");
         p.appendChild(c);
         this.dom = c;
+        this.dom.classList.add("hide");
         this.createUI(c);
         this.registerListener();
         if (!p.views) {
@@ -27,8 +28,6 @@ class ListView {
         }
         p.views.set(dir.fullpath, this);
         dir.children.forEach(f => this.displayFile(f));
-        this.adjustPlaceholders();
-        window.setTimeout(() => this.adjustUI(), 0);
     }
 
     registerListener() {
@@ -245,6 +244,8 @@ class ListView {
                 Array.from(tr.cells).forEach((td, j) => td.style.width = tr.previousSibling.cells[j].style.width);
             }
         });
+
+        this.adjustPlaceholders();
     }
 
     displayFile(f) {
@@ -309,12 +310,10 @@ class ListView {
             }
             let view = this.dom.parentNode.views.get(f.fullpath);
             if (!view) {
-                this.dom.classList.add("hide");
-                new ListView(this.fs, this.dom.parentNode, f);
-            } else {
-                this.dom.classList.add("hide");
-                view.show();
+                view = new ListView(this.fs, this.dom.parentNode, f);
             }
+            this.dom.classList.add("hide");
+            view.show();
         } else {
             this.fs.open(f);
         }
@@ -322,6 +321,7 @@ class ListView {
 
     show() {
         this.dom.classList.remove("hide");
+        window.setTimeout(() => this.adjustUI(), 0);
     }
 
     createItem(p, value, option) {

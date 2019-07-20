@@ -2,6 +2,6 @@
 ShowHidden = true
 
 [Tabs]
-Left = [ '/user/sunyanlin' ]
-Right = [ '/user/sunyanlin/Documents/workspace/onefilemanager' ]
+Left = [ 'ListView:/user/sunyanlin' ]
+Right = [ 'ListView:/user/sunyanlin/Documents/workspace/onefilemanager' ]
 
