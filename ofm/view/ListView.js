@@ -69,6 +69,15 @@ class ListView {
             }
         };
         window.addEventListener("resize", () => this.windowResized());
+        this.dom.onclick = () => {
+            if (window.currentTab !== this) {
+                let opsite = window.currentTab;
+                window.currentTab = this;
+                this.focus();
+                window.opsiteTab = opsite;
+                opsite.blur();
+            }
+        }
     }
 
     windowResized() {

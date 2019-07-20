@@ -17,11 +17,19 @@ td {
 }
 
 tr.hover {
-    background-color: var(--color-row-hover);
+    background-color: var(--color-row-hover-unfocus);
+}
+
+.focus tr.hover {
+    background-color: var(--color-row-hover-focus);
 }
 
 tr.select {
-    background-color: var(--color-row-select);
+    background-color: var(--color-row-select-unfocus);
+}
+
+.focus tr.select {
+    background-color: var(--color-row-select-focus);
 }
 
 .file-name {
@@ -46,10 +54,16 @@ tr.select {
     vertical-align: middle;
     white-space: nowrap;
     cursor: default;
+    color: var(--color-text-unfocus);
+}
+
+.focus .item {
+    color: var(--color-text);
 }
 
 .focus .header {
-    background-color: var(--color-focus);
+    background-color: var(--color-header-focus);
+    color: var(--color-text);
 }
 
 td.item {

@@ -10,12 +10,15 @@
     --color-g8:     hsl(0,0%,84%);
     --color-g9:     hsl(0,0%,82%);
 
-    --color-font:   hsl(0,0%,0%);
+    --color-text:   hsl(0,0%,0%);
+    --color-text-unfocus:   hsl(0,0%,30%);
     --color-border: hsl(0,0%,88%);
     --color-row-light: hsl(0,0%,100%);
     --color-row-dark: hsl(0,0%,94%);
-    --color-row-hover: hsl(211, 100%, 95%);
-    --color-row-select: hsl(220, 100%, 70%);
+    --color-row-hover-focus: hsl(211, 100%, 95%);
+    --color-row-hover-unfocus: hsl(0, 0%, 88%);
+    --color-row-select-focus: hsl(216, 100%, 60%);
+    --color-row-select-unfocus: hsl(0, 0%, 82%);
     --color-file-hidden : hsl(0,0%,50%);
-    --color-focus: hsl(220,10%,70%);
+    --color-header-focus: hsl(216,100%,70%);
 }
