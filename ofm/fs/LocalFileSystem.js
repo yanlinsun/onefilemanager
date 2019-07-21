@@ -10,9 +10,8 @@ class LocalFileSystem {
     constructor() {
     }
 
-    homeDir() {
-        let dir = os.homedir();
-        return new File(dir, '.');
+    async getHomeDir() {
+        return await this.getDir(os.homedir());
     }
 
     async getDir(fullpath) {

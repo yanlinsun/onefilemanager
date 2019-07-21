@@ -7,7 +7,7 @@ async function createTab(setting, container) {
     let i = setting.indexOf(":"), view, dir;
 
     if (i > 0) {
-        view = setting(0, i);
+        view = setting.substring(0, i);
         if (view.indexOf("View") == -1) {
             view = "ListView";
             dir = setting;
@@ -22,8 +22,20 @@ async function createTab(setting, container) {
         case "ListView":
         default:
             let fs = new LocalFileSystem();
-            dir = await fs.getDir(dir);
-            return new ListView(fs, container, dir);
+            try {
+                dir = await fs.getDir(dir);
+                return new ListView(fs, container, dir);
+            } catch (err) {
+                console.error(err);
+            }
+            // probably not found, load home dir
+            try {
+                dir = await fs.getHomeDir();
+                return new ListView(fs, container, dir);
+            } catch (err) {
+                console.error(err);
+                // TODO something
+            }
     }
 }
 
