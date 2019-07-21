@@ -66,6 +66,36 @@ class LocalFileSystem {
         console.log("open: " + file.fullpath);
         shell.openItem(file.fullpath);
     }
+
+    async move(srcFs, files, target) {
+        if (!target instanceof File) {
+            throw new Error("target must be a File, current: " + target);
+        }
+        if (srcFs instanceof LocalFileSystem) {
+            return await this.localMove(files, target);
+        }
+    }
+
+    async localMove(files, target) {
+        let promises = files.map(f => new Promise((resolve, reject) => {
+            let dest = path.resolve(target.fullpath, f.fullname);
+            console.log("move: " + f.fullpath + " to " + dest);
+            fs.rename(f.fullpath, dest,
+                (err) => { 
+                    if (err) { 
+                        reject(err);
+                    } else {
+                        resolve(f.fullname);
+                    }
+                });
+        }));
+        try {
+            let result = Promise.all(promises);
+            return result;
+        } catch (err) {
+            console.error(err);
+        }
+    }
 }
 
 module.exports = LocalFileSystem;

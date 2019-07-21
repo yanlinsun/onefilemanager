@@ -17,11 +17,13 @@ class FileShortcut {
         r(key.Open, this.open);
     }
 
-    move() {
+    async move() {
         let files = currentTab.getSelectedFiles();
         let target = opsiteTab.dir;
         let fs = opsiteTab.fs;
-        fs.move(currentTab.fs, files, target);
+        let result = await fs.move(currentTab.fs, files, target);
+        currentTab.refresh();
+        opsiteTab.refresh();
     }
 }
 

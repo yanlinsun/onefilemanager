@@ -16,6 +16,7 @@ class File {
         this.fullpath = path.resolve(dir, file);
         this.name = path.basename(file);
         this.ext = path.extname(file);
+        this.fullname = file;
         this.size = '-';
         this.date = '-';
         this.type = '-';

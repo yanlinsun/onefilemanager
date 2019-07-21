@@ -15,6 +15,7 @@ const FileAttr = {
 class ListView {
     constructor(fs, p, dir) {
         this.fs = fs;
+        this.dir = dir;
         let c = document.createElement("div")
         c.classList.add("window");
         c.classList.add("container-one-row");
@@ -68,7 +69,7 @@ class ListView {
                 attrList.scrollLeft = headerList.scrollLeft;
             }
         };
-        window.addEventListener("resize", () => this.windowResized());
+        window.addEventListener("resize", this.resize);
         this.dom.onclick = () => {
             if (window.currentTab !== this) {
                 let opsite = window.currentTab;
@@ -79,6 +80,12 @@ class ListView {
             }
         }
     }
+
+    deregisterListener() {
+        window.removeEventListener("resize", this.resize);
+    }
+
+    resize = () => this.windowResized();
 
     windowResized() {
         let attr = this.dom.querySelector("#file-attr-list");
@@ -321,10 +328,21 @@ class ListView {
             if (!view) {
                 view = new ListView(this.fs, this.dom.parentNode, f);
             }
-            this.hide();
-            view.show();
+            this.switchTo(view);
         } else {
             this.fs.open(f);
+        }
+    }
+
+    switchTo(view) {
+        this.hide();
+        view.show();
+        if (currentTab === this) {
+            currentTab = view;
+        } else if (opsiteTab === this) {
+            opsiteTab = view;
+        } else {
+            throw new Error("Program error: no tab defined");
         }
     }
 
@@ -377,6 +395,18 @@ class ListView {
         } else {
             c.innerText = value;
         }
+    }
+
+    getSelectedFiles() {
+        let selected = this.nameList.querySelectorAll(".select");
+        return Array.from(selected).map(tr => tr.file);
+    }
+
+    async refresh() {
+        this.deregisterListener();
+        await this.fs.listDir(this.dir);
+        let view = new ListView(this.fs, this.dom.parentNode, this.dir);
+        this.switchTo(view);
     }
 }
 

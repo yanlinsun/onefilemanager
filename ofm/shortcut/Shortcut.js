@@ -14,7 +14,7 @@ class Shortcut {
     }
 
     handleDown(e) {
-        if (event.defaultPrevented) {
+        if (e.defaultPrevented) {
             return; 
         }
         if (this.keys.indexOf(e.key) == -1) {
@@ -32,7 +32,7 @@ class Shortcut {
             }
             this.keys = [];
         }
-        event.preventDefault();
+        e.preventDefault();
     }
 
     handleUp(e) {
