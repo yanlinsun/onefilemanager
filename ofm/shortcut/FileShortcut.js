@@ -32,6 +32,11 @@ class FileShortcut {
         opsiteTab.refresh();
         log.debug("Shortcut: move exit");
     }
+
+    async open() {
+        let file = currentTab.getFocusFile();
+        currentTab.open(file);
+    }
 }
 
 module.exports = FileShortcut;

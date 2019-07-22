@@ -553,6 +553,10 @@ class ListView {
             nameList.scrollTop += focusRect.bottom - boxRect.bottom;
         }
     }
+
+    getFocusFile() {
+        return this.nameTable.querySelector(".focus").file;
+    }
 }
 
 module.exports = ListView;
