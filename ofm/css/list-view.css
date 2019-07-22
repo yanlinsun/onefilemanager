@@ -16,22 +16,6 @@ td {
     white-space: nowrap;
 }
 
-tr.hover {
-    background-color: var(--color-row-hover-unfocus);
-}
-
-.focus tr.hover {
-    background-color: var(--color-row-hover-focus);
-}
-
-tr.select {
-    background-color: var(--color-row-select-unfocus);
-}
-
-.focus tr.select {
-    background-color: var(--color-row-select-focus);
-}
-
 .file-name {
     min-width: 40px;
     max-width: 40%;
@@ -79,6 +63,3 @@ td.item {
     cursor: default;
 }
 
-.hidden-file {
-    color: var(--color-file-hidden);
-}

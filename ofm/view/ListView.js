@@ -18,6 +18,7 @@ class ListView {
         this.dir = dir;
         let c = document.createElement("div")
         c.classList.add("window");
+        c.classList.add("file");
         c.classList.add("container-one-row");
         p.appendChild(c);
         this.dom = c;
@@ -295,12 +296,12 @@ class ListView {
             attrrow.classList.remove("hover");
         };
         namerow.onclick = () => {
-            if (namerow.classList.contains("select")) {
-                namerow.classList.remove("select");
-                attrrow.classList.remove("select");
+            if (namerow.classList.contains("selected")) {
+                namerow.classList.remove("selected");
+                attrrow.classList.remove("selected");
             } else {
-                namerow.classList.add("select");
-                attrrow.classList.add("select");
+                namerow.classList.add("selected");
+                attrrow.classList.add("selected");
             }
         }
         namerow.ondblclick = () => {
