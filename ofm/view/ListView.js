@@ -296,10 +296,9 @@ class ListView {
             attrrow.classList.remove("hover");
         };
         namerow.onclick = () => {
-            if (namerow.classList.contains("selected")) {
-                namerow.classList.remove("selected");
-                attrrow.classList.remove("selected");
-            } else {
+            let selected = this.dom.querySelectorAll(".file .selected");
+            Array.from(selected).forEach(tr => tr.classList.remove("selected"));
+            if (!namerow.classList.contains("selected")) {
                 namerow.classList.add("selected");
                 attrrow.classList.add("selected");
             }
