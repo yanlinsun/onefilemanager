@@ -1,0 +1,27 @@
+.file {
+    --color-file-hidden: hsl(0,0%,50%);
+    --color-file-hover: hsl(211,100%,95%);
+    --color-file-hover-unfocus: hsl(0,0%,88%);
+    --color-file-selected: hsl(216,100%,60%);
+    --color-file-selected-unfocus: transparent;
+}
+
+.file .hover {
+    background-color: var(--color-file-hover-unfocus);
+}
+
+.file.focus .hover {
+    background-color: var(--color-file-hover);
+}
+
+.file .selected {
+    background-color: var(--color-file-selected-unfocus);
+}
+
+.file.focus .selected {
+    background-color: var(--color-file-selected);
+}
+
+.file .hidden-file {
+    color: var(--color-file-hidden);
+}
