@@ -31,11 +31,13 @@ class FileShortcut {
         currentTab.refresh();
         opsiteTab.refresh();
         log.debug("Shortcut: move exit");
+        return false;
     }
 
     async open() {
         let file = currentTab.getFocusFile();
         currentTab.open(file);
+        return false;
     }
 }
 

@@ -25,9 +25,9 @@ const Default = {
             CreateFolder : "F7",
             CreateFile : "Shift+F7",
             Edit : "F4",
-            CopyToClipboard : "CommandOrControl+C",
-            PasteFromClipboard : "CommandOrControl+V",
-            SelectAll : "CommandOrControl+A",
+            CopyToClipboard : [ "Command+C", "Control+C" ],
+            PasteFromClipboard : [ "Command+V", "Control+V" ],
+            SelectAll : [ "Command+A", "Control+A" ],
             Select : "Space",
             Delete : "Delete",
             DeletePermanently : "Shift+Delete",
@@ -36,10 +36,10 @@ const Default = {
         
         Navigation : {
             ParentFolder : "Backspace",
-            Up : "ArrowUp",
-            Down : "ArrowDown",
-            Left : "ArrowLeft",
-            Right : "ArrowRight",
+            Up : "Up",
+            Down : "Down",
+            Left : "Left",
+            Right : "Right",
             PageUp : "PageUp",
             PageDown : "PageDown",
             Top : "Home",
@@ -48,8 +48,8 @@ const Default = {
         },
 
         Tab : {
-            CloseTab : "CommandOrControl+W",
-            NewTab : "CommandOrControl+T",
+            CloseTab : [ "Command+W", "Control+W" ],
+            NewTab : [ "Command+T", "Control+T" ],
             SwitchTab : "Tab",
             NextTab : "Control+]",
             PreviousTab : "Control+["
@@ -59,7 +59,7 @@ const Default = {
             Minimize : "Alt+M",
             FullScreen : "Control+F",
             Configuration : [ "Command+,", "Alt+," ],
-            Quit : "CommandOrControl+Q"
+            Quit : [ "Command+Q", "Control+Q" ]
         }
     }
 };

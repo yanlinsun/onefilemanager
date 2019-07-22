@@ -12,6 +12,7 @@ class TabShortcut {
 
     switchTab() {
         opsiteTab.focus();
+        return false;
     }
 }
 

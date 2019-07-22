@@ -17,44 +17,54 @@ class NavShortcut {
 
     moveUp() {
         currentTab.moveUp();
+        return false;
     }
 
     moveDown() {
         currentTab.moveDown();
+        return false;
     }
 
     moveLeft() {
         currentTab.moveLeft();
+        return false;
     }
 
     moveRight() {
         currentTab.moveRight();
+        return false;
     }
 
     moveTop() {
         currentTab.moveTop();
+        return false;
     }
 
     moveEnd() {
         currentTab.moveEnd();
+        return false;
     }
 
     parentFolder() {
         let dir = currentTab.dir.parentDir();
         currentTab.open(dir);
+        return false;
     }
 
     async goHome() {
         let dir = await currentTab.fs.getHomeDir();
         currentTab.open(dir);
+        return false;
     }
 
     pageUp() {
         currentTab.pageUp();
+        return false;
     }
 
     pageDown() {
         currentTab.pageDown();
+        return false;
     }
 }
 

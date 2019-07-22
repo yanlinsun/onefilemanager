@@ -471,7 +471,7 @@ class ListView {
         if (row && row.nextSibling) {
             row.nextSibling.click();
         } else {
-            this.nameTable.rows[0].click();
+            this.nameTable.rows[this.nameTable.rows.length - 1].click();
         }
     }
 
