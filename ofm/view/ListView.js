@@ -402,6 +402,9 @@ class ListView {
                 window.currentTab = this;
             }
             this.dom.classList.add("focus");
+            if (!this.nameTable.querySelector(".focus")) {
+                this.nameTable.rows[0].click();
+            }
         }
     }
 
