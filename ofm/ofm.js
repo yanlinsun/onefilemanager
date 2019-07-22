@@ -2,6 +2,7 @@
 
 const LocalFileSystem = require('./fs/LocalFileSystem.js');
 const ListView = require('./view/ListView.js');
+const log = require('electron-log');
 
 async function createTab(setting, container) {
     let i = setting.indexOf(":"), view, dir;
@@ -21,25 +22,28 @@ async function createTab(setting, container) {
     switch (view) {
         case "ListView":
         default:
+            log.debug("Initialize ListView: " + dir);
             let fs = new LocalFileSystem();
             try {
                 dir = await fs.getDir(dir);
                 return new ListView(fs, container, dir);
             } catch (err) {
-                console.error(err);
+                log.warning("Default directory &1 not exist, use home dir instead", dir.fullpath);
+                log.error(err);
             }
             // probably not found, load home dir
             try {
                 dir = await fs.getHomeDir();
                 return new ListView(fs, container, dir);
             } catch (err) {
-                console.error(err);
+                log.error(err);
                 // TODO something
             }
     }
 }
 
 async function start() {
+    log.verbose("OneFileManager start");
     let containers = document.querySelectorAll(".file-container")
     let leftTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[0]));
     let rightTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[1]));
