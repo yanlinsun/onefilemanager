@@ -13,7 +13,4 @@
     --color-text:   hsl(0,0%,0%);
     --color-text-unfocus:   hsl(0,0%,30%);
     --color-border: hsl(0,0%,88%);
-    --color-row-light: hsl(0,0%,100%);
-    --color-row-dark: hsl(0,0%,94%);
-    --color-header-focus: hsl(216,100%,70%);
 }

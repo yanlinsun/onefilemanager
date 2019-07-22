@@ -28,11 +28,11 @@ async function createTab(setting, container) {
                 dir = await fs.getDir(dir);
                 return new ListView(fs, container, dir);
             } catch (err) {
-                log.error("Default directory [" + dir.fullpath + "] not exist, use home dir instead");
                 log.error(err);
             }
             // probably not found, load home dir
             try {
+                log.error("Default directory [" + dir + "] not exist, use home dir instead");
                 dir = await fs.getHomeDir();
                 return new ListView(fs, container, dir);
             } catch (err) {

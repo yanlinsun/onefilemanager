@@ -159,7 +159,7 @@ class ListView {
         c = document.createElement("table");
         p.appendChild(c);
 
-        this.nameList = c;
+        this.nameTable = c;
 
     }
 
@@ -193,7 +193,7 @@ class ListView {
 
         let tbody = c.createTBody();
        
-        this.attrList = tbody;
+        this.attrTable = tbody;
     }
 
     createIcon(icon) {
@@ -244,7 +244,7 @@ class ListView {
         } else {
             header.innerText = "keyboard_arrow_down";
         }
-        Array.from(this.nameList.rows).slice(1).sort((a, b) => ((v1, v2) => {
+        Array.from(this.nameTable.rows).slice(1).sort((a, b) => ((v1, v2) => {
             if (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)) { 
                 return v1 - v2; 
             } else {
@@ -254,8 +254,8 @@ class ListView {
             asc ? a.file[attr] : b.file[attr], 
             asc ? b.file[attr] : a.file[attr]
         )).forEach((tr, i) => {
-            this.nameList.appendChild(tr);
-            this.attrList.appendChild(tr.attr);
+            this.nameTable.appendChild(tr);
+            this.attrTable.appendChild(tr.attr);
         });
     }
 
@@ -286,7 +286,7 @@ class ListView {
         if (f.isHidden && !ofmconfig.General.ShowHidden) {
             return;
         }
-        let namerow = this.nameList.insertRow();
+        let namerow = this.nameTable.insertRow();
         namerow.file = f;
         let icon = "default";
         if (f.isDirectory) {
@@ -296,7 +296,7 @@ class ListView {
         }
         let itemOption = { rightAlign: false, icon: TypeIcon[icon], hidden: f.isHidden };
         this.createItem(namerow, f.name, itemOption);
-        let attrrow = this.attrList.insertRow();
+        let attrrow = this.attrTable.insertRow();
         namerow.attr = attrrow;
         itemOption.icon = null;
         itemOption.rightAlign = true;
@@ -323,6 +323,7 @@ class ListView {
                 namerow.classList.add("focus");
                 attrrow.classList.add("selected");
                 attrrow.classList.add("focus");
+                this.repositionFocus();
             }
         }
         namerow.ondblclick = () => {
@@ -437,7 +438,7 @@ class ListView {
     }
 
     getSelectedFiles() {
-        let selected = this.nameList.querySelectorAll(".selected");
+        let selected = this.nameTable.querySelectorAll(".selected");
         return Array.from(selected).map(tr => tr.file);
     }
 
@@ -454,20 +455,20 @@ class ListView {
     }
 
     moveUp() {
-        let row = this.nameList.querySelector(".focus");
+        let row = this.nameTable.querySelector(".focus");
         if (row && row.previousSibling) {
             row.previousSibling.click();
         } else {
-            this.nameList.rows[0].click();
+            this.nameTable.rows[0].click();
         }
     }
 
     moveDown() {
-        let row = this.nameList.querySelector(".focus");
+        let row = this.nameTable.querySelector(".focus");
         if (row && row.nextSibling) {
             row.nextSibling.click();
         } else {
-            this.nameList.rows[0].click();
+            this.nameTable.rows[0].click();
         }
     }
 
@@ -478,46 +479,75 @@ class ListView {
     }
 
     moveTop() {
-        this.nameList.rows[0].click();
-        let nameList = this.dom.querySelector("#file-name-list");
-        nameList.scrollTop = 0;
+        this.nameTable.rows[0].click();
     }
 
     moveEnd() {
-        this.nameList.rows[this.nameList.rows.length - 1].click();
-        let nameList = this.dom.querySelector("#file-name-list");
-        nameList.scrollTop = nameList.scrollHeight;
+        this.nameTable.rows[this.nameTable.rows.length - 1].click();
     }
 
     pageUp() {
+        let focusRow = this.nameTable.querySelector(".focus");
         let nameList = this.dom.querySelector("#file-name-list");
-        let rect = nameList.getBoundingClientRect();
-        let objs = document.elementsFromPoint(rect.left + 3, rect.top + 2);
+        let boxRect = nameList.getBoundingClientRect();
+        let objs = document.elementsFromPoint(boxRect.left + 3, boxRect.top + 1);
         for (let o of Array.from(objs).values()) {
             if (o.tagName === "TD") {
-                let rowRect = o.parentNode.getBoundingClientRect();
-                let contentRect = o.parentNode.parentNode.getBoundingClientRect();
-                let diff = Math.min(rect.top - rowRect.top, rect.bottom - rowRect.bottom);
-                nameList.scrollTop -= diff;
-                o.click();
+                let targetRow = o.parentNode;
+                let rowRect = targetRow.getBoundingClientRect();
+                if (rowRect.top < boxRect.top) {
+                    targetRow = targetRow.nextSibling;
+                    rowRect = targetRow.getBoundingClientRect();
+                }
+                if (targetRow !== focusRow) {
+                    targetRow.click();
+                } else {
+                    let cnt = Math.floor(boxRect.height / rowRect.height);
+                    let rows = Array.from(this.nameTable.rows);
+                    let focusIdx = rows.indexOf(focusRow);
+                    let targetIdx = Math.max(0, focusIdx - cnt);
+                    rows[targetIdx].click();
+                }
                 break;
             }
         }
     }
 
     pageDown() {
+        let focusRow = this.nameTable.querySelector(".focus");
         let nameList = this.dom.querySelector("#file-name-list");
-        let rect = nameList.getBoundingClientRect();
-        let objs = document.elementsFromPoint(rect.left + 3, rect.bottom - 2);
+        let boxRect = nameList.getBoundingClientRect();
+        let objs = document.elementsFromPoint(boxRect.left + 3, boxRect.bottom - 1);
         for (let o of Array.from(objs).values()) {
             if (o.tagName === "TD") {
-                let rowRect = o.parentNode.getBoundingClientRect();
-                let contentRect = o.parentNode.parentNode.getBoundingClientRect();
-                let diff = Math.min(rowRect.bottom - rect.bottom, rowRect.top - rect.top);
-                nameList.scrollTop += diff;
-                o.click();
+                let targetRow = o.parentNode;
+                let rowRect = targetRow.getBoundingClientRect();
+                if (rowRect.bottom > boxRect.bottom) {
+                    targetRow = targetRow.previousSibling;
+                    rowRect = targetRow.getBoundingClientRect();
+                }
+                if (targetRow !== focusRow) {
+                    targetRow.click();
+                } else {
+                    let cnt = Math.floor(boxRect.height / rowRect.height);
+                    let rows = Array.from(this.nameTable.rows);
+                    let focusIdx = rows.indexOf(focusRow);
+                    let targetIdx = Math.min(rows.length - 1, focusIdx + cnt);
+                    rows[targetIdx].click();
+                }
                 break;
             }
+        }
+    }
+
+    repositionFocus() {
+        let focusRect = this.nameTable.querySelector(".focus").getBoundingClientRect();
+        let nameList = this.dom.querySelector("#file-name-list");
+        let boxRect = nameList.getBoundingClientRect();
+        if (focusRect.top < boxRect.top) {
+            nameList.scrollTop -= boxRect.top - focusRect.top;
+        } else if (focusRect.bottom > boxRect.bottom) {
+            nameList.scrollTop += focusRect.bottom - boxRect.bottom;
         }
     }
 }
