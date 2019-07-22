@@ -13,7 +13,7 @@ async function createTab(setting, container) {
             view = "ListView";
             dir = setting;
         } else {
-            dir = setting(i + 1);
+            dir = setting.substring(i + 1);
         }
     } else {
         view = "ListView";
@@ -28,7 +28,7 @@ async function createTab(setting, container) {
                 dir = await fs.getDir(dir);
                 return new ListView(fs, container, dir);
             } catch (err) {
-                log.warning("Default directory &1 not exist, use home dir instead", dir.fullpath);
+                log.error("Default directory [" + dir.fullpath + "] not exist, use home dir instead");
                 log.error(err);
             }
             // probably not found, load home dir
@@ -46,7 +46,7 @@ async function start() {
     log.verbose("OneFileManager start");
     let containers = document.querySelectorAll(".file-container")
     let leftTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[0]));
-    let rightTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[1]));
+    let rightTabs = ofmconfig.Tabs.Right.map(t => createTab(t, containers[1]));
     leftTabs = await Promise.all(leftTabs);
     rightTabs = await Promise.all(rightTabs);
     let left, right;
@@ -55,16 +55,15 @@ async function start() {
             break;
         }
     }
-    left.show();
     window.currentTab = left;
+    left.show(true);
     for (right of rightTabs.values()) {
         if (right.dir == ofmconfig.Tabs.Active.Right) {
             break;
         }
     }
-    right.show();
     window.opsiteTab = right;
-    right.blur();
+    right.show();
 }
 
 module.exports = {

@@ -1,5 +1,7 @@
 'use strict';
 
+const log = require('electron-log');
+
 class FileShortcut {
     constructor(r) {
         let key = ofmconfig.KeyMapping.File;
@@ -18,12 +20,17 @@ class FileShortcut {
     }
 
     async move() {
+        log.debug("Shortcut: move enter");
         let files = currentTab.getSelectedFiles();
+        log.debug("Files: " + files.length);
         let target = opsiteTab.dir;
+        log.debug("Target: " + target.fullpath);
         let fs = opsiteTab.fs;
         let result = await fs.move(currentTab.fs, files, target);
+        log.debug("Shortcut: move finished");
         currentTab.refresh();
         opsiteTab.refresh();
+        log.debug("Shortcut: move exit");
     }
 }
 

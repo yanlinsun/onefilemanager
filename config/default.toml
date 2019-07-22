@@ -3,12 +3,12 @@
 ShowHidden = true
 
 [Tabs]
-Left = [ 'ListView:C:\User\ysun' ]
-Right = [ 'ListView:C:\Users\ysun\Workspaces\Private\OneFileManager' ]
+Left = [ 'ListView:/Users/sunyanlin' ]
+Right = [ 'ListView:/Users/sunyanlin/Documents/workspace/onefilemanager' ]
 
 
 [Trace]
-# 0 - None, 1 - Info, 2 - Warning, 3 - Error, 4 - Debug
-Level = 4
+# error, warn, info, verbose, debug, silly
+Level = 'debug'
 # available variable: %APP_DIR%, // TODO  %CUR_USER_HOME%, %SYSTEM_ROOT%
-File = '%APP_DIR%\log\ofm.log'
+File = "%APP_DIR%/log/ofm.log"

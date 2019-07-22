@@ -21,7 +21,6 @@
     "electron-log": "^3.0.6",
     "filesize": "^4.1.2",
     "hidefile": "^3.0.0",
-    "merge-anything": "^2.4.0",
     "toml": "^3.0.0"
   }
 }

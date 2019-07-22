@@ -11,11 +11,7 @@ class TabShortcut {
     }
 
     switchTab() {
-        let opsite = opsiteTab;
-        opsiteTab = currentTab;
-        currentTab = opsite;
-        opsiteTab.blur();
-        currentTab.focus();
+        opsiteTab.focus();
     }
 }
 

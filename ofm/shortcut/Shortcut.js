@@ -2,6 +2,7 @@
 
 const FileShortcut = require('./FileShortcut.js');
 const TabShortcut = require('./TabShortcut.js');
+const log = require('electron-log');
 
 class Shortcut {
     constructor() {
@@ -23,6 +24,7 @@ class Shortcut {
         let key = this.keys.sort().join("+");
         if (this.mapping.has(key)) {
             let fn = this.mapping.get(key);
+            log.debug("Shortcurt.handleDown: Key[" + key + "] => [" + (fn ? fn.name : "null") + "]");
             if (fn) {
                 try {
                     fn();
@@ -51,6 +53,7 @@ class Shortcut {
         }
         let a = key.split("+");
         key = a.sort().join("+");
+        log.debug("Shortcurt.register: Key[" + key + "] => [" + (fn ? fn.name : "null") + "]");
         this.mapping.set(key, fn);
     }
 
