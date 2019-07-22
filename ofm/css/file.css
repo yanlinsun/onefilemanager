@@ -1,9 +1,13 @@
 .file {
     --color-file-hidden: hsl(0,0%,50%);
-    --color-file-hover: hsl(211,100%,95%);
+    --color-file-hover: rgb(229,243,255);
     --color-file-hover-unfocus: hsl(0,0%,88%);
-    --color-file-selected: hsl(216,100%,60%);
+    --color-file-selected: rgb(205,232,255);
     --color-file-selected-unfocus: transparent;
+}
+
+.file tr {
+    border-top: 1px solid var(--color-file-border);
 }
 
 .file .hover {

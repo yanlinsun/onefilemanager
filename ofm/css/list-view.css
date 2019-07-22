@@ -1,38 +1,61 @@
-table {
+.listview {
+    --color-border-focus: rgb(123, 195, 255);
+    --color-border-selected: rgb(205,232,255);
+    --color-row-light: hsl(0,0%,100%);
+    --color-row-dark: hsl(0,0%,94%);
+    --color-header-focus: hsl(216,100%,70%);
+}
+
+.listview table {
     flex: none;
     padding: 0px;
 }
 
-tr:nth-child(odd) {
+.listview tr {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.listview tr.focus {
+    border-top-color: var(--color-border-focus);
+    border-bottom-color: var(--color-border-focus);
+}
+
+.listview tr.selected {
+    border-top-color: var(--color-border-selected);
+    border-bottom-color: var(--color-border-selected);
+}
+
+.listview tr:nth-child(odd) {
     background-color: var(--color-row-light);
 }
 
-tr:nth-child(even) {
+.listview tr:nth-child(even) {
     background-color: var(--color-row-dark);
 }
 
-td {
+.listview td {
     border-right: 2px solid var(--color-border);
     white-space: nowrap;
 }
 
-.file-name {
+.listview .file-name {
     min-width: 40px;
     max-width: 40%;
 }
 
-.file-attr {
+.listview .file-attr {
     min-width: 120px;
     max-width: 60%;
 }
 
-.header-container {
+.listview .header-container {
     flex: none;
     height: fit-content;
 }
 
-.item,
-.header {
+.listview .item,
+.listview .header {
     flex: none;
     height: fit-content;
     vertical-align: middle;
@@ -41,24 +64,24 @@ td {
     color: var(--color-text-unfocus);
 }
 
-.focus .item {
+.listview.focus .item {
     color: var(--color-text);
 }
 
-.focus .header {
+.listview.focus .header {
     background-color: var(--color-header-focus);
     color: var(--color-text);
 }
 
-td.item {
+.listview td.item {
     padding: 0px 2px;
 }
 
-.header {
+.listview .header {
     font-weight: bold;
 }
 
-.header span {
+.listview .header span {
     margin: 0px 2px;
     cursor: default;
 }

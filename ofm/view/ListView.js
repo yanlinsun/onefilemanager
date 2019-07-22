@@ -19,6 +19,7 @@ class ListView {
         let c = document.createElement("div")
         c.classList.add("window");
         c.classList.add("file");
+        c.classList.add("listview");
         c.classList.add("container-one-row");
         p.appendChild(c);
         this.dom = c;
