@@ -28,6 +28,14 @@ class File {
         this.children = [];
     }
 
+    parentDir() {
+        let dir = path.resolve(this.fullpath, '..');
+        if (dir != this.fullpath) {
+            return new File(dir, '.');
+        } 
+        return null;
+    }
+
     async loadAttr() {
         return new Promise((resolve, reject) => {
             hidefile.isHidden(this.fullpath, (err, flag) => {

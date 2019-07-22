@@ -314,10 +314,15 @@ class ListView {
         };
         namerow.onclick = () => {
             let selected = this.dom.querySelectorAll(".file .selected");
-            Array.from(selected).forEach(tr => tr.classList.remove("selected"));
+            Array.from(selected).forEach(tr => {
+                tr.classList.remove("selected")
+                tr.classList.remove("focus");
+            });
             if (!namerow.classList.contains("selected")) {
                 namerow.classList.add("selected");
+                namerow.classList.add("focus");
                 attrrow.classList.add("selected");
+                attrrow.classList.add("focus");
             }
         }
         namerow.ondblclick = () => {
@@ -446,6 +451,74 @@ class ListView {
         this.switchTo(view);
         log.debug(this.pfx + " set scrolltop = " + pos);
         view.dom.querySelector("#file-name-list").scrollTop = pos;
+    }
+
+    moveUp() {
+        let row = this.nameList.querySelector(".focus");
+        if (row && row.previousSibling) {
+            row.previousSibling.click();
+        } else {
+            this.nameList.rows[0].click();
+        }
+    }
+
+    moveDown() {
+        let row = this.nameList.querySelector(".focus");
+        if (row && row.nextSibling) {
+            row.nextSibling.click();
+        } else {
+            this.nameList.rows[0].click();
+        }
+    }
+
+    moveLeft() {
+    }
+
+    moveRight() {
+    }
+
+    moveTop() {
+        this.nameList.rows[0].click();
+        let nameList = this.dom.querySelector("#file-name-list");
+        nameList.scrollTop = 0;
+    }
+
+    moveEnd() {
+        this.nameList.rows[this.nameList.rows.length - 1].click();
+        let nameList = this.dom.querySelector("#file-name-list");
+        nameList.scrollTop = nameList.scrollHeight;
+    }
+
+    pageUp() {
+        let nameList = this.dom.querySelector("#file-name-list");
+        let rect = nameList.getBoundingClientRect();
+        let objs = document.elementsFromPoint(rect.left + 3, rect.top + 2);
+        for (let o of Array.from(objs).values()) {
+            if (o.tagName === "TD") {
+                let rowRect = o.parentNode.getBoundingClientRect();
+                let contentRect = o.parentNode.parentNode.getBoundingClientRect();
+                let diff = Math.min(rect.top - rowRect.top, rect.bottom - rowRect.bottom);
+                nameList.scrollTop -= diff;
+                o.click();
+                break;
+            }
+        }
+    }
+
+    pageDown() {
+        let nameList = this.dom.querySelector("#file-name-list");
+        let rect = nameList.getBoundingClientRect();
+        let objs = document.elementsFromPoint(rect.left + 3, rect.bottom - 2);
+        for (let o of Array.from(objs).values()) {
+            if (o.tagName === "TD") {
+                let rowRect = o.parentNode.getBoundingClientRect();
+                let contentRect = o.parentNode.parentNode.getBoundingClientRect();
+                let diff = Math.min(rowRect.bottom - rect.bottom, rowRect.top - rect.top);
+                nameList.scrollTop += diff;
+                o.click();
+                break;
+            }
+        }
     }
 }
 

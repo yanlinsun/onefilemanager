@@ -36,8 +36,12 @@ const Default = {
         
         Navigation : {
             ParentFolder : "Backspace",
-            Up : "Up",
-            Down : "Down",
+            Up : "ArrowUp",
+            Down : "ArrowDown",
+            Left : "ArrowLeft",
+            Right : "ArrowRight",
+            PageUp : "PageUp",
+            PageDown : "PageDown",
             Top : "Home",
             End : "End",
             HomeDir : "Control+H"

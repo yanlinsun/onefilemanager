@@ -2,17 +2,24 @@
 
 const FileShortcut = require('./FileShortcut.js');
 const TabShortcut = require('./TabShortcut.js');
+const NavShortcut = require('./NavShortcut.js');
 const log = require('electron-log');
 
 class Shortcut {
     constructor() {
         this.mapping = new Map();
         this.keys = new Array();
-        new FileShortcut((key, fn) => this.register(key, fn));
-        new TabShortcut((key, fn) => this.register(key, fn));
         document.addEventListener("keydown", e => this.handleDown(e));
         document.addEventListener("keyup", e => this.handleUp(e));
     }
+
+    registerAll() {
+        new FileShortcut(this.register);
+        new TabShortcut(this.register);
+        new NavShortcut(this.register);
+    }
+
+    register = (key, fn) => this.registerKey(key, fn);
 
     handleDown(e) {
         if (e.defaultPrevented) {
@@ -22,8 +29,8 @@ class Shortcut {
             this.keys.push(e.key);
         }
         let key = this.keys.sort().join("+");
-        if (this.mapping.has(key)) {
-            let fn = this.mapping.get(key);
+        if (this.mapping.has(key.toUpperCase())) {
+            let fn = this.mapping.get(key.toUpperCase());
             log.debug("Shortcurt.handleDown: Key[" + key + "] => [" + (fn ? fn.name : "null") + "]");
             if (fn) {
                 try {
@@ -44,7 +51,7 @@ class Shortcut {
         }
     }
 
-    register(key, fn) {
+    registerKey(key, fn) {
         if (process.platform === 'darwin') {
             key = key.replace("ControlOrCommand", "Meta");
             key = key.replace("Command", "Meta");
@@ -53,12 +60,13 @@ class Shortcut {
         }
         let a = key.split("+");
         key = a.sort().join("+");
-        log.debug("Shortcurt.register: Key[" + key + "] => [" + (fn ? fn.name : "null") + "]");
-        this.mapping.set(key, fn);
+        log.debug("Shortcurt.register: Key[" + key + "] => [" + (fn ? fn.name : "") + "]");
+        this.mapping.set(key.toUpperCase(), fn);
     }
 
     static registerAll() {
-        new Shortcut();
+        let sc = new Shortcut();
+        sc.registerAll();
     }
 }
 
