@@ -24,20 +24,27 @@ async function createTab(setting, container) {
         default:
             log.debug("Initialize ListView: %s", dir);
             let fs = new LocalFileSystem();
+            let f;
             try {
-                dir = await fs.getDir(dir);
-                return new ListView(fs, container, dir);
+                f = await fs.getDir(dir);
+                log.debug("dir read finished");
             } catch (err) {
                 log.error(err);
             }
-            // probably not found, load home dir
-            try {
-                log.error("Default directory [%s] not exist, use home dir instead", dir);
-                dir = await fs.getHomeDir();
-                return new ListView(fs, container, dir);
-            } catch (err) {
-                log.error(err);
-                // TODO something
+            if (!f) {
+                // probably not found, load home dir
+                try {
+                    log.error("Default directory [%s] not exist, use home dir instead", dir);
+                    f = await fs.getHomeDir();
+                } catch (err) {
+                    log.error(err);
+                    // TODO something
+                }
+            }
+            if (!f) {
+                log.error("failed to load dir");
+            } else {
+                return new ListView(fs, container, f);
             }
     }
 }

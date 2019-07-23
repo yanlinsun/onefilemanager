@@ -28,7 +28,9 @@ class LocalFileSystem {
             log.debug("set awaitable promise for [%s]", fullpath);
             cache.set(fullpath, p);
             f = await p;
+            cache.set(fullpath, f);
             log.debug("main reading process finished");
+            log.debug(f);
         } else if (f instanceof Promise) {
             log.debug("read awaitable for [%s] from cache");
             f = await p;

@@ -4,7 +4,8 @@
   "description": "One file manager. Manage all files(local, cloud) in one application.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "mocha --recursive --ui tdd"
   },
   "repository": "https://github.com/yanlinsun/onefilemanager.git",
   "keywords": [
@@ -14,12 +15,16 @@
     "ftp",
     "nfs"
   ],
-  "author": "Yanlin",
+  "author": "Yanlin Sun",
   "license": "MIT-2.0",
   "devDependencies": {
+    "chai": "^4.2.0",
     "electron": "^5.0.6",
     "filesize": "^4.1.2",
     "hidefile": "^3.0.0",
+    "jsdom": "15.1.1",
+    "jsdom-global": "3.0.2",
+    "mocha": "^6.2.0",
     "mousetrap": "^1.6.3",
     "sprintf-js": "^1.1.2",
     "toml": "^3.0.0"

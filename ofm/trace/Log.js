@@ -13,54 +13,55 @@ function init() {
     if (ofmconfig.Trace) {
         if (ofmconfig.Trace.File && ofmconfig.Trace.File != "") {
             let file = ofmconfig.Trace.File;
-            if (file.indexOf("%APP_DIR%") != -1) {
-                file = file.replace("%APP_DIR%", '.');
-                file = path.resolve(file);
+            if (typeof(file) == "string") {
+                if (file.indexOf("%APP_DIR%") != -1) {
+                    file = file.replace("%APP_DIR%", '.');
+                    file = path.resolve(file);
+                }
+                setting.file = file;
+            } else {
+                console.error("Config [Trace.File] is not a string");
             }
-            console.log("Log file: " + file);
-            setting.file = file;
         }
         if (ofmconfig.Trace.Level) {
-            console.log("Log level: " + ofmconfig.Trace.Level);
             setting.level = levels.indexOf(ofmconfig.Trace.Level.toLowerCase());
+            if (setting.level === -1) {
+                setting.level = 0;
+            }
         }
     }
 }
 
-function log(level, msg, caller, ...args) {
+/**
+ * return formated string for testing
+ */
+function log(level, msg, ...args) {
     if (setting.level < level) {
-        return;
-    }
-    if (typeof(msg) != "string") { // instanceof not safe
-        args = [ msg.name, ...args, msg ];
-        msg = "%s";
+        return null;
     }
     let d = new Date();
-    let s = sprintf("%i-%i-%i %i:%i:%i.%i %s> " + msg, 
-        d.getFullYear(), d.getMonth() + 1, d.getDay(), 
-        d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds(), 
-        (caller ? caller.name : ""),
-        ...args);
-    printToConsole(level, s, objArgs(...args));
-    if (setting.file) {
-        saveToFile(s, setting.file);
+    if (typeof(msg) !== "string" && !(msg instanceof Error)) {
+        return consoleLogObj(msg);
+    } else {
+        let s = sprintf("%i-%02i-%02i %02i:%02i:%02i.%03i > " + msg, 
+            d.getFullYear(), d.getMonth() + 1, d.getDay(), 
+            d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds(), 
+            ...args);
+        printToConsole(level, s);
+        if (setting.file) {
+            saveToFile(s, setting.file);
+        }
+        return s;
     }
 }
 
-function printToConsole(level, s, ...oArgs) {
-    if (oArgs.length > 0) {
-        if (level === 2) {
-            console.group(s);
-        } else {
-            console.groupCollapsed(s);
-        }
-    }
+function printToConsole(level, s) {
     switch (level) {
         case 2:
             console.error(s);
             break;
         case 3:
-            console.warning(s);
+            console.warn(s);
             break;
         case 1:
             console.info(s);
@@ -69,37 +70,32 @@ function printToConsole(level, s, ...oArgs) {
             console.log(s);
             break;
     }
-    if (oArgs.length > 0) {
-        for (let arg of oArgs.values()) {
-            consoleLogArg(arg);
-        }
-        console.groupEnd(s);
-    }
 }
 
-const objs = ["object", "function", "array", "error"];
-
-function objArgs(...args) {
-    return args.map(o => {
-        if (o && objs.indexOf(typeof(o)) !== -1) {
-            return o;
-        }
-    });
-}
-
-function consoleLogArg(arg) {
+function consoleLogObj(arg) {
     if (arg instanceof Node) {
         console.dirxml(arg);
+        console.trace();
+        return arg.outerHTML;
     } else if (arg instanceof Array) {
         console.table(arg);
+        console.trace();
+        return arg.toString();
     } else if (arg instanceof Error) {
         console.error(arg);
+        return arg.toString();
     } else if (arg instanceof Function) {
         console.log("function " + arg.name + "(...)");
+        console.trace();
+        return "function " + arg.name + "(...)";
     } else if (arg instanceof Object) {
         console.dir(arg);
+        console.trace();
+        return arg.toString();
     } else {
         console.log(arg);
+        console.trace();
+        return arg.toString();
     }
 }
 
@@ -107,27 +103,29 @@ function saveToFile(s, file) {
 }
 
 function debug(msg, ...args) {
-    log(5, msg, debug.caller, ...args);
+    return log(5, msg, ...args);
 }
 
 function error(msg, ...args) {
-    log(2, msg, error.caller, ...args);
+    return log(2, msg, ...args);
 }
 
 function warning(msg, ...args) {
-    log(3, msg, warning.caller, ...args);
+    return log(3, msg, ...args);
 }
 
 function warn(msg, ...args) {
-    log(3, msg, warn.caller, ...args);
+    return log(3, msg, ...args);
 }
 
 function info(msg, ...args) {
-    log(1, msg, info.caller, ...args);
+    return log(1, msg, ...args);
 }
 
 function verbose(msg, ...args) {
-    log(4, msg, verbose.caller, ...args);
+    return log(4, msg, ...args);
 }
 
-module.exports = { init, debug, error, warning, info, verbose, warn };
+module.exports = { init, debug, error, warning, info, verbose, warn, 
+    // for testing only
+    setting };

@@ -9,8 +9,8 @@ function get(fullpath) {
 }
 
 function set(fullpath, file) {
-    if (!(file instanceof File)) {
-        throw new Error("File required for cache: " + file);
+    if (!(file instanceof File || file instanceof Promise)) {
+        throw new Error("Parameter need to be a File or Promise, found: " + file);
     }
     __cache.set(fullpath, file);
 }
