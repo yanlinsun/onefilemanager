@@ -338,19 +338,19 @@ class ListView {
     async open(f) {
         if (f.isDirectory) {
             log.debug(this.pfx + "open dir [" + f.fullpath + "]");
-            if (f.children.length == 0) {
-                try {
-                    log.debug(this.pfx + " list children");
-                    await this.fs.listDir(f);
-                } catch (err) {
-                    // permission issue, or timeout
-                    // TODO display error in status bar
-                    log.error(err);
-                    return;
-                }
-            }
             let view = this.dom.parentNode.views.get(f.fullpath);
             if (!view) {
+                if (f.children.length == 0) {
+                    try {
+                        log.debug(this.pfx + " list children");
+                        await this.fs.listDir(f);
+                    } catch (err) {
+                        // permission issue, or timeout
+                        // TODO display error in status bar
+                        log.error(err);
+                        return;
+                    }
+                }
                 view = new ListView(this.fs, this.dom.parentNode, f);
             }
             this.switchTo(view);
@@ -386,7 +386,10 @@ class ListView {
     show(focus) {
         log.debug(this.pfx + "show " + focus);
         this.dom.classList.remove("hide");
-        window.setTimeout(() => this.adjustUI(), 0);
+        if (!this.uiAdjusted) {
+            window.setTimeout(() => this.adjustUI(), 0);
+            this.uiAdjusted = true;
+        }
         if (focus) {
             this.focus();
         }
