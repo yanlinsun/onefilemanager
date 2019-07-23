@@ -3,7 +3,7 @@
 const os = require('os');
 const filesize = require('filesize');
 const { ExtFileType, TypeIcon } = require('../fs/FileType.js');
-const log = require('electron-log');
+const log = require('../trace/Log.js');
 
 const FileAttr = {
     Name: "name",
@@ -15,8 +15,7 @@ const FileAttr = {
 
 class ListView {
     constructor(fs, p, dir) {
-        this.pfx = "LView[" + dir.fullpath + "]: ";
-        log.debug(this.pfx + "enter");
+        log.debug(dir);
         this.fs = fs;
         this.dir = dir;
         let c = document.createElement("div")
@@ -34,11 +33,9 @@ class ListView {
         }
         p.views.set(dir.fullpath, this);
         dir.children.forEach(f => this.displayFile(f));
-        log.debug(this.pfx + " exit");
     }
 
     registerListener() {
-        log.debug(this.pfx + "registerListener");
         let attrList = this.dom.querySelector("#file-attr-list");
         let nameList = this.dom.querySelector("#file-name-list");
         let headerList = this.dom.querySelector("#attr-header-list");
@@ -89,36 +86,33 @@ class ListView {
     }
 
     deregisterListener() {
-        log.debug(this.pfx + "deregisterListener");
         window.removeEventListener("resize", this.resize);
     }
 
     resize = () => this.windowResized();
 
     windowResized() {
-        log.debug(this.pfx + "resize");
         let attr = this.dom.querySelector("#file-attr-list");
         let box = attr.getBoundingClientRect();
         let vsw = box.width - attr.clientWidth + 1;
         let hsh = box.height - attr.clientHeight + 1;
         let nameph = this.dom.querySelector("#file-name-list").nextSibling;
         let headerph = this.dom.querySelector("#attr-header-list>.placeholder");
-        log.debug(this.pfx + " name placeholder.height =  " + hsh);
+        log.debug("name placeholder.height =  %i", hsh);
         nameph.style.height = hsh + "px";
-        log.debug(this.pfx + " header placeholder.width = " + vsw);
+        log.debug("header placeholder.width = %i", vsw);
         headerph.style.width = vsw + "px";
     }
 
     adjustPlaceholders() {
-        log.debug(this.pfx + "adjustPlaceholders");
         let name = this.dom.querySelector("#file-name-list");
         let nameph = name.nextSibling;
-        log.debug(this.pfx + " name placeholder.width =  " + name.offsetWidth);
+        log.debug("name placeholder.width =  %i", name.offsetWidth);
         nameph.style.width = name.offsetWidth + "px";
 
         let header = this.dom.querySelector("#attr-header-list");
         let headerph = header.querySelector(".placeholder");
-        log.debug(this.pfx + " header placeholder.height = " + header.offsetHeight);
+        log.debug("header placeholder.height = %i", header.offsetHeight);
         headerph.style.height = header.offsetHeight + "px";
 
         this.windowResized();
@@ -227,7 +221,6 @@ class ListView {
     }
 
     sort(header, attr) {
-        log.debug(this.pfx + "sort: " + attr);
         if (header.asc === undefined) {
             header.asc = false;
         }
@@ -260,18 +253,17 @@ class ListView {
     }
 
     adjustUI() {
-        log.debug(this.pfx + "adjustUI");
         let headers = this.dom.querySelectorAll("#attr-header-list>.header");
         let attrs = this.dom.querySelectorAll("#file-attr-list tr:nth-child(1)>td");
         let tw = 0;
         attrs.forEach((td, i) => {
             let w = Math.max(headers[i].getBoundingClientRect().width + 2, td.getBoundingClientRect().width);
             tw += w;
-            log.debug(this.pfx + " " + headers[i].innerText + ".width = " + w);
+            log.debug("%s.width = %i", headers[i].innerText, w);
             headers[i].style.width = w + "px";
             td.style.width = w + "px"; // divider width
         });
-        log.debug(this.pfx + " table.width = " + tw);
+        log.debug("table.width = %i", tw);
         this.dom.querySelector("#file-attr-list table").style.width = tw + "px";
         this.dom.querySelectorAll("#file-attr-list tr").forEach((tr, i) => {
             if (i > 0) {
@@ -337,12 +329,11 @@ class ListView {
 
     async open(f) {
         if (f.isDirectory) {
-            log.debug(this.pfx + "open dir [" + f.fullpath + "]");
+            log.debug("open dir [%s]", f.fullpath);
             let view = this.dom.parentNode.views.get(f.fullpath);
             if (!view) {
                 if (f.children.length == 0) {
                     try {
-                        log.debug(this.pfx + " list children");
                         await this.fs.listDir(f);
                     } catch (err) {
                         // permission issue, or timeout
@@ -355,13 +346,13 @@ class ListView {
             }
             this.switchTo(view);
         } else {
-            log.debug(this.pfx + "open file [" + f.fullpath + "]");
+            log.debug("open file [%s]", f.fullpath);
             this.fs.open(f);
         }
     }
 
     switchTo(view) {
-        log.debug(this.pfx + "switchTo [" + view.dir.fullpath + "]");
+        log.debug("switchTo [%s]", view.dir.fullpath);
         if (currentTab === this) {
             currentTab = view;
         } else if (opsiteTab === this) {
@@ -378,13 +369,11 @@ class ListView {
     }
 
     hide() {
-        log.debug(this.pfx + "hide");
         this.dom.classList.add("hide");
         this.blur();
     }
 
     show(focus) {
-        log.debug(this.pfx + "show " + focus);
         this.dom.classList.remove("hide");
         if (!this.uiAdjusted) {
             window.setTimeout(() => this.adjustUI(), 0);
@@ -396,10 +385,8 @@ class ListView {
     }
 
     focus() {
-        log.debug(this.pfx + "focus");
         if (!this.dom.classList.contains("focus")) {
             if (window.currentTab !== this) {
-                log.debug(this.pfx + " switch tab");
                 window.opsiteTab = window.currentTab;
                 window.opsiteTab.blur();
                 window.currentTab = this;
@@ -449,14 +436,12 @@ class ListView {
     }
 
     async refresh() {
-        log.debug(this.pfx + "refresh");
         this.deregisterListener();
         await this.fs.listDir(this.dir, true);
         let view = new ListView(this.fs, this.dom.parentNode, this.dir);
         let nameList = this.dom.querySelector("#file-name-list");
         let pos = nameList.scrollTop;
         this.switchTo(view);
-        log.debug(this.pfx + " set scrolltop = " + pos);
         view.dom.querySelector("#file-name-list").scrollTop = pos;
     }
 

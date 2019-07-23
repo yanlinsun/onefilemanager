@@ -5,7 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const File = require('./File.js');
 const shell = require('electron').shell;
-const log = require('electron-log');
+const cache = require('./Cache.js');
+const log = require('../trace/Log.js');
 
 class LocalFileSystem {
     constructor() {
@@ -16,27 +17,39 @@ class LocalFileSystem {
     }
 
     async getDir(fullpath) {
-        log.debug("LFS.getDir enter: [" + fullpath + "]");
-        let f = new File(fullpath, '.');
-        await this.listDir(f);
-        log.debug("LFS.getDir exit");
+        let f = cache.get(fullpath);
+        if (!f) {
+            log.debug("[%s] not in cache, read from fs", fullpath);
+            let f = new File(fullpath, '.');
+            let p = new Promise(async (resolve, reject) => {
+                await this.listDir(f);
+                resolve(f);
+            });
+            log.debug("set awaitable promise for [%s]", fullpath);
+            cache.set(fullpath, p);
+            f = await p;
+            log.debug("main reading process finished");
+        } else if (f instanceof Promise) {
+            log.debug("read awaitable for [%s] from cache");
+            f = await p;
+            log.debug("awaitable reading process finished");
+        } else if (f instanceof File) {
+            log.debug("read [%s] from cache", fullpath);
+        }
         return f;
     }
 
     async listDir(dir, bypassCache) {
-        if (!dir instanceof File) {
+        if (!(dir instanceof File)) {
             throw new Error("listDir require parameter type of File");
         }
         if (!dir.isDirectory) {
             throw new Error(dir.fullpath + " is not a directory");
         }
-        let pfx = "LFS.listDir[" + dir.fullpath + "]: ";
-        log.debug(pfx + "enter");
         if (!bypassCache && dir.children.length > 0) {
-            log.debug(pfx + " exit (cache) ");
             return dir.children;
         }
-        log.debug(pfx + " read from fs");
+        log.debug("list [%s]", dir.fullpath);
         let p = new Promise((resolve, reject) => {
             fs.readdir(dir.fullpath, { withFileTypes: false }, (err, files) => {
                 if (err) {
@@ -48,14 +61,16 @@ class LocalFileSystem {
             });
         });
         let files = await p;
-        log.debug(pfx + ": " + files.length);
+        log.debug("load %i files", files.length);
         files = files.map(f => {
             let file = new File(dir.fullpath, f);
+            log.debug("read [%s]", f);
             file.parentFile = dir;
             return file.loadAttr();
         });
+        log.debug("file attributes load waiting");
         files = await Promise.all(files);
-        log.debug(pfx + " get file's attr " + files.length);
+        log.debug("file attributes load finished");
         let parentDir = path.resolve(dir.fullpath, '..');
         if (parentDir != dir.fullpath) {
             // not root folder
@@ -64,7 +79,6 @@ class LocalFileSystem {
             files = [parentFile, ...files];
         }
         dir.children = files;
-        log.debug(pfx + " exit");
         return files;
     }
 
@@ -72,12 +86,12 @@ class LocalFileSystem {
         if (file.isDirectory) {
             throw new Error(file.fullpath + " is not a file");
         }
-        log.debug("LFS.open[" + file.fullpath + "]");
+        log.debug("open [%s]", file.fullpath);
         shell.openItem(file.fullpath);
     }
 
     async move(srcFs, files, target) {
-        if (!target instanceof File) {
+        if (!(target instanceof File)) {
             throw new Error("target must be a File, current: " + target);
         }
         if (srcFs instanceof LocalFileSystem) {
@@ -86,10 +100,8 @@ class LocalFileSystem {
     }
 
     async localMove(files, target) {
-        log.debug("LFS.localMove: " + files.length + " files => [" + target.fullpath + "]");
         let promises = files.map(f => new Promise((resolve, reject) => {
             let dest = path.resolve(target.fullpath, f.fullname);
-            console.log("LFS.localMove: [" + f.fullpath + "] => [" + dest + "]");
             fs.rename(f.fullpath, dest,
                 (err) => { 
                     if (err) { 
@@ -99,13 +111,8 @@ class LocalFileSystem {
                     }
                 });
         }));
-        try {
-            let result = Promise.all(promises);
-            log.debug("LFS.localMove: exit");
-            return result;
-        } catch (err) {
-            log.error(err);
-        }
+        let result = Promise.all(promises);
+        return result;
     }
 }
 

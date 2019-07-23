@@ -2,7 +2,7 @@
 
 const LocalFileSystem = require('./fs/LocalFileSystem.js');
 const ListView = require('./view/ListView.js');
-const log = require('electron-log');
+const log = require('./trace/Log.js');
 
 async function createTab(setting, container) {
     let i = setting.indexOf(":"), view, dir;
@@ -22,7 +22,7 @@ async function createTab(setting, container) {
     switch (view) {
         case "ListView":
         default:
-            log.debug("Initialize ListView: " + dir);
+            log.debug("Initialize ListView: %s", dir);
             let fs = new LocalFileSystem();
             try {
                 dir = await fs.getDir(dir);
@@ -32,7 +32,7 @@ async function createTab(setting, container) {
             }
             // probably not found, load home dir
             try {
-                log.error("Default directory [" + dir + "] not exist, use home dir instead");
+                log.error("Default directory [%s] not exist, use home dir instead", dir);
                 dir = await fs.getHomeDir();
                 return new ListView(fs, container, dir);
             } catch (err) {

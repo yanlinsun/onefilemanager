@@ -3,7 +3,7 @@
 const FileShortcut = require('./FileShortcut.js');
 const TabShortcut = require('./TabShortcut.js');
 const NavShortcut = require('./NavShortcut.js');
-const log = require('electron-log');
+const log = require('../trace/Log.js');
 const mousetrap = require('mousetrap');
 
 class Shortcut {
@@ -16,11 +16,11 @@ class Shortcut {
     register(key, fn) {
         if (key instanceof Array) {
             key.forEach(k => {
-                log.debug("Shortcurt.register: Key[" + k + "] => [" + (fn ? fn.name : "") + "]");
+                log.debug("Shortcurt.register: Key[%s] => [%s]", k, (fn ? fn.name : ""));
                 mousetrap.bind(k.toLowerCase(), fn);
             });
         } else {
-            log.debug("Shortcurt.register: Key[" + key + "] => [" + (fn ? fn.name : "") + "]");
+            log.debug("Shortcurt.register: Key[%s] => [%s]", key, (fn ? fn.name : ""));
             mousetrap.bind(key.toLowerCase(), fn);
         }
     }
