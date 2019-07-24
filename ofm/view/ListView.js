@@ -545,6 +545,31 @@ class ListView {
     getFocusFile() {
         return this.nameTable.querySelector(".focus").file;
     }
+
+    filter(files) {
+        Array.from(this.nameTable.rows).forEach(tr => {
+            if (files.indexOf(tr.file.name) === -1) {
+                if (!tr.classList.contains("hide")) {
+                    tr.classList.add("hide");
+                    tr.attr.classList.add("hide");
+                }
+            } else {
+                tr.classList.remove("hide");
+                tr.attr.classList.remove("hide");
+            }
+        });
+    }
+
+    getFilenames() {
+        return this.dir.children.map(f => f.name);
+    }
+
+    clearFilter() {
+        Array.from(this.nameTable.rows).forEach(tr => {
+            tr.classList.remove("hide")
+            tr.attr.classList.remove("hide");
+        });
+    }
 }
 
 module.exports = ListView;

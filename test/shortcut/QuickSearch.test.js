@@ -35,7 +35,6 @@ suite('QuickSearch', function() {
                 "xxxxxxxxxx"
             ];
 
-            debugger;
             this.qs.notimeout = true;
             this.qs.quickSearch("0");
             expect(currentTab.filtered).to.have.lengthOf(6)
@@ -64,13 +63,6 @@ suite('QuickSearch', function() {
             .that.to.include("0123xxxxxx")
             .that.to.include("x0123xxxxx")
             .that.to.include("x01xxx0123");
-            this.qs.quickSearch("4");
-            expect(currentTab.filtered).to.have.lengthOf(0);
-            this.qs.quickSearch("Backspace");
-            expect(currentTab.filtered).to.have.lengthOf(3)
-            .that.to.include("0123xxxxxx")
-            .that.to.include("x0123xxxxx")
-            .that.to.include("x01xxx0123");
             this.qs.quickSearch("Backspace");
             expect(currentTab.filtered).to.have.lengthOf(3)
             .that.to.include("0123xxxxxx")
@@ -92,7 +84,7 @@ suite('QuickSearch', function() {
             .that.to.include("x01xxx0123")
             .that.to.include("xxxxxxxx01");
             this.qs.quickSearch("Backspace");
-            expect(currentTab.cleared).to.be.true;
+            expect(currentTab.filtered).to.have.lengthOf(10);
         });
 
         test('quickSearch ignore case', function() {
@@ -105,13 +97,46 @@ suite('QuickSearch', function() {
                 "ABCDEFG"
             ];
 
-            debugger;
             this.qs.notimeout = true;
             this.qs.quickSearch("A");
             this.qs.quickSearch("b");
             expect(currentTab.filtered).to.have.lengthOf(2)
             .that.to.include("Abcdefg")
             .that.to.include("ABCDEFG");
+        });
+
+        test('quickSearch invalid input', function() {
+            currentTab.filenames = [
+                "Abcdefg",
+                "defg",
+                "Cdefg",
+                "CDefg",
+                "cdefg",
+                "ABCDEFG"
+            ];
+
+            this.qs.notimeout = true;
+            this.qs.quickSearch("x");
+            expect(this.qs.keys).to.be.a("array").that.to.have.lengthOf(0);
+            this.qs.quickSearch("a");
+            expect(this.qs.keys).to.be.a("array").that.to.have.lengthOf(1)
+                .that.to.include("a")
+                .that.to.not.include("x");
+            this.qs.quickSearch("b");
+            expect(this.qs.keys).to.be.a("array").that.to.have.lengthOf(2)
+                .that.to.include("a")
+                .that.to.include("b")
+                .that.to.not.include("x");
+            this.qs.quickSearch("x");
+            this.qs.quickSearch("y");
+            expect(this.qs.keys).to.be.a("array").that.to.have.lengthOf(2)
+                .that.to.include("a")
+                .that.to.include("b")
+                .that.to.not.include("x")
+                .that.to.not.include("y");
+            expect(currentTab.filtered).to.be.a("array").that.to.have.lengthOf(2)
+                .that.to.include("Abcdefg")
+                .that.to.include("ABCDEFG");
         });
 
     });

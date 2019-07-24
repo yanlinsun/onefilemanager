@@ -5,7 +5,7 @@ const log = require('../trace/Log.js');
 class QuickSearch {
     constructor(r) {
         r("Esc", this.resetSearch);
-        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789"), this.quickSearch);
+        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789"), (e, key) => this.quickSearch(key));
         this.applyConfig();
     }
 
@@ -76,14 +76,15 @@ class QuickSearch {
             }
         }
         try {
-            let files = this.method(this.files, this.keys.slice());
-            if (files instanceof Array) {
-                if (files.length < this.files.length) {
-                    currentTab.filter(files);
+            let filtered = this.method(this.files, this.keys.slice());
+            if (filtered instanceof Array) {
+                log.debug("QuickSearch filter [%i] => [%i]", this.files.length, filtered.length);
+                if (filtered.length === 0) {
+                    this.keys.pop();
                 } else {
-                    currentTab.clearFilter();
+                    currentTab.filter(filtered);
+                    this.files = filtered;
                 }
-                this.files = files;
             }
         } catch (err) {
             log.error(err);
@@ -92,6 +93,7 @@ class QuickSearch {
     }
 
     resetSearch() {
+        log.debug("Reset QuickSearch");
         currentTab.clearFilter();
     }
 
@@ -102,6 +104,7 @@ class QuickSearch {
 
     clear() {
         if (!this.notimeout) { // only for debug
+            log.debug("QuickSearch clear");
             this.id = null;
             this.keys = null; 
             this.files = null;
@@ -110,6 +113,7 @@ class QuickSearch {
 
     nativeMethod(files, keys) {
         let p = keys.join("");
+        log.debug("QuickSearch key: [%s]", p);
         return files.filter(f => f.toLowerCase().indexOf(p.toLowerCase()) !== -1);
     }
 }

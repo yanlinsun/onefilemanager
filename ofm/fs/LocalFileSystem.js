@@ -21,7 +21,7 @@ class LocalFileSystem {
         let f = cache.get(fullpath);
         if (!f) {
             log.debug("lfs [%s] not in cache, read from fs", fullpath);
-            let f = new File(fullpath, '.');
+            f = new File(fullpath, '.');
             let p = new Promise(async (resolve, reject) => {
                 try {
                     await this.listDir(f);

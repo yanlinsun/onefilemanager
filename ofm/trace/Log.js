@@ -20,7 +20,7 @@ function init() {
                 }
                 setting.file = file;
             } else {
-                console.error("Config [Trace.File] is not a string");
+                error("Config [Trace.File] is not a string");
             }
         }
         if (ofmconfig.Trace.Level) {
@@ -29,6 +29,7 @@ function init() {
                 setting.level = 0;
             }
         }
+        info("Log initialized: file [%s], level [%s]", setting.file, levels[setting.level]);
     }
 }
 

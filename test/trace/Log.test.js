@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-require('jsdom-global')();
 
 const log = require('../../ofm/trace/Log.js');
 

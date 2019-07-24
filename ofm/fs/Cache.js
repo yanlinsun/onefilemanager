@@ -15,4 +15,8 @@ function set(fullpath, file) {
     __cache.set(fullpath, file);
 }
 
-module.exports = { get, set };
+function clear() {
+    __cache.clear();
+}
+
+module.exports = { get, set, clear };
