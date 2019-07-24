@@ -1,5 +1,6 @@
 'use strict';
 const sprintf = require('sprintf-js').sprintf;
+const log = require('../trace/Log.js');
 
 class QuickSearch {
     constructor(r) {
@@ -55,6 +56,7 @@ class QuickSearch {
     }
 
     quickSearch(key) {
+        log.debug("QuickSearch: %s", key);
         if (!this.id) {
             // new session
             this.id = setTimeout(() => this.clear(), this.timeout);

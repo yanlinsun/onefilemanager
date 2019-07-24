@@ -40,7 +40,11 @@ suite('Log', function() {
             this.config.File = "%APP_DIR%/a/b/c";
             log.init();      
             let appDir = path.resolve(".");
-            appDir = appDir + "/a/b/c";
+            if (process.platform === 'win32') {
+                appDir = appDir + "\\a\\b\\c";
+            } else {
+                appDir = appDir + "/a/b/c";
+            }
             expect(log.setting.file).to.equal(appDir);
         });
         test('file: non string', function() {

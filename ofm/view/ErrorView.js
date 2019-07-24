@@ -8,6 +8,7 @@ class ErrorView {
         let c = document.createElement("div");
         c.classList.add("window");
         c.classList.add("error");
+        c.classList.add("scrollable");
         c.classList.add("container-one-row");
         p.appendChild(c);
         c.innerText = err.toString();
