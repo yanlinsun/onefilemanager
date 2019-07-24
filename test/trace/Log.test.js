@@ -154,6 +154,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.null;
             s = log.debug("test");
             expect(trim(s)).to.be.null;
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
 
         test('level: info log should be recoreded', function() {
@@ -171,6 +173,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.null;
             s = log.debug("test");
             expect(trim(s)).to.be.null;
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
 
         test('level: error log should be recoreded', function() {
@@ -188,6 +192,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.null;
             s = log.debug("test");
             expect(trim(s)).to.be.null;
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
 
         test('level: warning log should be recoreded', function() {
@@ -205,6 +211,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.null;
             s = log.debug("test");
             expect(trim(s)).to.be.null;
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
 
         test('level: verbose log should be recoreded', function() {
@@ -222,6 +230,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.equal("test");
             s = log.debug("test");
             expect(trim(s)).to.be.null;
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
 
         test('level: debug log should be recoreded', function() {
@@ -239,6 +249,8 @@ suite('Log', function() {
             expect(trim(s)).to.be.equal("test");
             s = log.debug("test");
             expect(trim(s)).to.be.equal("test");
+            s = log.toUser("test");
+            expect(trim(s)).to.equal("test");
         });
     });
 

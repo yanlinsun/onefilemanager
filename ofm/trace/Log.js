@@ -126,6 +126,10 @@ function verbose(msg, ...args) {
     return log(4, msg, ...args);
 }
 
-module.exports = { init, debug, error, warning, info, verbose, warn, 
+function toUser(msg, ...args) {
+    return log(0, msg, ...args);
+}
+
+module.exports = { init, debug, error, warning, info, verbose, warn, toUser,
     // for testing only
     setting };

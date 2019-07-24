@@ -23,4 +23,8 @@ function merge(target, source) {
     return target;
 }
 
+function clone(obj) {
+
+}
+
 module.exports = { merge };

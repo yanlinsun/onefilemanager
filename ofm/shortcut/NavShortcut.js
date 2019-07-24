@@ -13,6 +13,12 @@ class NavShortcut {
         r(key.End, this.moveEnd);
         r(key.HomeDir, this.goHome);
         r(key.ParentFolder, this.parentFolder);
+        r(key.Refresh, this.refresh);
+    }
+
+    refresh() {
+        currentTab.refresh();
+        return false;
     }
 
     moveUp() {

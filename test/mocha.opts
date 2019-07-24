@@ -1,0 +1,4 @@
+-r jsdom-global/register
+-r ./test/setup.js
+--recursive
+--ui tdd

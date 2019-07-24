@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "mocha --recursive --ui tdd"
+    "test": "mocha",
+    "test-debug" : "mocha --inspect-brk"
   },
   "repository": "https://github.com/yanlinsun/onefilemanager.git",
   "keywords": [

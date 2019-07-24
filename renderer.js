@@ -10,8 +10,8 @@ const ofm = require('./ofm/ofm.js');
 
 function init() {
     window.ofmconfig = Configuration.load();
-    Shortcut.registerAll();
     OfmLog.init();
+    Shortcut.registerAll();
 
     ofm.start();
 }
