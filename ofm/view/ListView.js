@@ -447,19 +447,23 @@ class ListView {
 
     moveUp() {
         let row = this.nameTable.querySelector(".focus");
-        if (row && row.previousSibling) {
-            row.previousSibling.click();
-        } else {
-            this.nameTable.rows[0].click();
+        let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
+        let i = rows.indexOf(row);
+        if (i > 0) {
+            rows[i - 1].click();
+        } else if (rows[0] !== row) {
+            rows[0].click();
         }
     }
 
     moveDown() {
         let row = this.nameTable.querySelector(".focus");
-        if (row && row.nextSibling) {
-            row.nextSibling.click();
-        } else {
-            this.nameTable.rows[this.nameTable.rows.length - 1].click();
+        let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
+        let i = rows.indexOf(row);
+        if (i < rows.length - 1) {
+            rows[i + 1].click();
+        } else if (rows[rows.length - 1] !== row) {
+            rows[rows.length - 1].click();
         }
     }
 
@@ -470,11 +474,13 @@ class ListView {
     }
 
     moveTop() {
-        this.nameTable.rows[0].click();
+        let rows = this.nameTable.querySelectorAll("tr:not(.hide)");
+        rows[0].click();
     }
 
     moveEnd() {
-        this.nameTable.rows[this.nameTable.rows.length - 1].click();
+        let rows = this.nameTable.querySelectorAll("tr:not(.hide)");
+        rows[rows.length - 1].click();
     }
 
     pageUp() {
@@ -494,7 +500,7 @@ class ListView {
                     targetRow.click();
                 } else {
                     let cnt = Math.floor(boxRect.height / rowRect.height);
-                    let rows = Array.from(this.nameTable.rows);
+                    let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
                     let focusIdx = rows.indexOf(focusRow);
                     let targetIdx = Math.max(0, focusIdx - cnt);
                     rows[targetIdx].click();
@@ -521,7 +527,7 @@ class ListView {
                     targetRow.click();
                 } else {
                     let cnt = Math.floor(boxRect.height / rowRect.height);
-                    let rows = Array.from(this.nameTable.rows);
+                    let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
                     let focusIdx = rows.indexOf(focusRow);
                     let targetIdx = Math.min(rows.length - 1, focusIdx + cnt);
                     rows[targetIdx].click();
