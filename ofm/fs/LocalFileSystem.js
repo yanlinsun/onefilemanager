@@ -17,26 +17,32 @@ class LocalFileSystem {
     }
 
     async getDir(fullpath) {
+        log.debug("lfs get directory [%s]", fullpath);
         let f = cache.get(fullpath);
         if (!f) {
-            log.debug("[%s] not in cache, read from fs", fullpath);
+            log.debug("lfs [%s] not in cache, read from fs", fullpath);
             let f = new File(fullpath, '.');
             let p = new Promise(async (resolve, reject) => {
-                await this.listDir(f);
-                resolve(f);
+                try {
+                    await this.listDir(f);
+                    resolve(f);
+                } catch (err) {
+                    reject(err);
+                }
             });
-            log.debug("set awaitable promise for [%s]", fullpath);
+            log.debug("lfs set awaitable fs reading process for [%s]", fullpath);
             cache.set(fullpath, p);
             f = await p;
             cache.set(fullpath, f);
-            log.debug("main reading process finished");
+            log.debug("lfs reading process for [%s] finished", fullpath);
             log.debug(f);
         } else if (f instanceof Promise) {
-            log.debug("read awaitable for [%s] from cache");
-            f = await p;
-            log.debug("awaitable reading process finished");
+            log.debug("lfs got awaitable fs reading process for [%s] from cache", fullpath);
+            f = await f;
+            log.debug("lfs awaitable fs reading process for [%s] finished", fullpath);
+            log.debug(f);
         } else if (f instanceof File) {
-            log.debug("read [%s] from cache", fullpath);
+            log.debug("lfs read [%s] from cache", fullpath);
         }
         return f;
     }
@@ -51,7 +57,7 @@ class LocalFileSystem {
         if (!bypassCache && dir.children.length > 0) {
             return dir.children;
         }
-        log.debug("list [%s]", dir.fullpath);
+        log.debug("lfs list [%s] from fs", dir.fullpath);
         let p = new Promise((resolve, reject) => {
             fs.readdir(dir.fullpath, { withFileTypes: false }, (err, files) => {
                 if (err) {
@@ -63,16 +69,16 @@ class LocalFileSystem {
             });
         });
         let files = await p;
-        log.debug("load %i files", files.length);
+        log.debug("lfs list [%s] loaded [%i] files", dir.fullpath, files.length);
         files = files.map(f => {
             let file = new File(dir.fullpath, f);
-            log.debug("read [%s]", f);
+            log.debug("lfs read file [%s]", f);
             file.parentFile = dir;
             return file.loadAttr();
         });
-        log.debug("file attributes load waiting");
+        log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
         files = await Promise.all(files);
-        log.debug("file attributes load finished");
+        log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
         let parentDir = path.resolve(dir.fullpath, '..');
         if (parentDir != dir.fullpath) {
             // not root folder
@@ -88,7 +94,7 @@ class LocalFileSystem {
         if (file.isDirectory) {
             throw new Error(file.fullpath + " is not a file");
         }
-        log.debug("open [%s]", file.fullpath);
+        log.debug("lfs open [%s]", file.fullpath);
         shell.openItem(file.fullpath);
     }
 

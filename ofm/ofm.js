@@ -2,6 +2,7 @@
 
 const LocalFileSystem = require('./fs/LocalFileSystem.js');
 const ListView = require('./view/ListView.js');
+const ErrorView = require('./view/ErrorView.js');
 const log = require('./trace/Log.js');
 
 async function createTab(setting, container) {
@@ -31,21 +32,17 @@ async function createTab(setting, container) {
             } catch (err) {
                 log.error(err);
             }
-            if (!f) {
-                // probably not found, load home dir
-                try {
+            try {
+                if (!f) {
+                    // probably not found, load home dir
                     log.error("Default directory [%s] not exist, use home dir instead", dir);
                     f = await fs.getHomeDir();
-                } catch (err) {
-                    log.error(err);
-                    // TODO something
                 }
-            }
-            if (!f) {
-                log.error("failed to load dir");
-            } else {
                 return new ListView(fs, container, f);
+            } catch (err) {
+                return new ErrorView(fs, container, err);
             }
+            break;
     }
 }
 

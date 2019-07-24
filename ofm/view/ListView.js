@@ -15,7 +15,7 @@ const FileAttr = {
 
 class ListView {
     constructor(fs, p, dir) {
-        log.debug("ListView for [%s]", dir.fullpath);
+        log.debug("ListView for [%s] in container [%s]", dir.fullpath, p.id);
         this.fs = fs;
         this.dir = dir;
         let c = document.createElement("div")
