@@ -1,0 +1,18 @@
+body.create-file {
+    font-size: 1.5em;
+    min-width: 300px;
+    min-height: 200px;
+    padding: 10px;
+}
+
+.create-file input[type=text] {
+    height: 2em;
+}
+
+.create-file .buttons label {
+    width: 40%;
+}
+
+.create-file .buttons input[type=button] {
+    width: 20%;
+}

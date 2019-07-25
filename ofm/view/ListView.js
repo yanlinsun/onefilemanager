@@ -450,7 +450,7 @@ class ListView {
     }
 
     getSelectedFiles() {
-        let selected = this.nameTable.querySelectorAll(".selected");
+        let selected = this.nameTable.querySelectorAll(".selected:not(:first-child)");
         return Array.from(selected).map(tr => tr.file);
     }
 
@@ -602,7 +602,7 @@ class ListView {
 
     selectFocus() {
         let focusRow = this.nameTable.querySelector(".focus");
-        if (!focusRow.classList.contains("selected")) {
+        if (!focusRow.classList.contains("selected") && focusRow.file.name !== '..') {
             focusRow.classList.add("selected");
             focusRow.attr.classList.add("selected");
         }
@@ -620,9 +620,23 @@ class ListView {
     selectAll() {
         let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
         rows.forEach(row => {
-            row.classList.add("selected");
-            row.attr.classList.add("selected");
+            if (row.file.name === '..') {
+                row.classList.remove("selected");
+                row.attr.classList.remove("selected");
+            } else {
+                row.classList.add("selected");
+                row.attr.classList.add("selected");
+            }
         });
+    }
+
+    locate(name) {
+        for (let row of this.nameTable.rows) {
+            if (row.file.name === name) {
+                row.click();
+                break;
+            }
+        }
     }
 }
 

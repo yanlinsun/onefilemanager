@@ -153,6 +153,36 @@ class LocalFileSystem {
         let result = Promise.all(promises);
         return result;
     }
+
+    async createFile(name, target) {
+        let fullpath = path.resolve(target.fullpath, name);
+        let p = new Promise((resolve, reject) => {
+            fs.writeFile(fullpath, "", (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(fullpath);
+                }
+            });
+        });
+        let result = await p;
+        return result;
+    }
+
+    async createFolder(name, target) {
+        let fullpath = path.resolve(target.fullpath, name);
+        let p = new Promise((resolve, reject) => {
+            fs.mkdir(fullpath, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(fullpath);
+                }
+            });
+        });
+        let result = await p;
+        return result;
+    }
 }
 
 module.exports = LocalFileSystem;

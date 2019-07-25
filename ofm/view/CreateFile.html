@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link href="../../index.css" rel="stylesheet" type="text/css"></link>
+    <link href="../../css/create-file.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body class="create-file container-one-column">
+      <section class="container-one-column name">
+          <label for="file_name">Please type in name:</label>
+          <input type="text" id="file_name"></input>
+      </section>
+      <section class="container-one-row buttons">
+          <label>Create:</label>
+          <input type="button" id="type_file" value='File'></input>
+          <input type="button" id="type_folder" value='Folder'></input>
+      </section>
+    <script>
+        require("./CreateFile.js");
+    </script>
+  </body>
+</html>
+
