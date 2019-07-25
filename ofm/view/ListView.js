@@ -324,7 +324,7 @@ class ListView {
             attrrow.classList.remove("hover");
         };
         namerow.onclick = () => {
-            let selected = this.dom.querySelectorAll(".file .selected");
+            let selected = this.dom.querySelectorAll(".file .selected,.file .focus");
             Array.from(selected).forEach(tr => {
                 tr.classList.remove("selected")
                 tr.classList.remove("focus");
@@ -597,6 +597,31 @@ class ListView {
         Array.from(this.nameTable.rows).forEach(tr => {
             tr.classList.remove("hide")
             tr.attr.classList.remove("hide");
+        });
+    }
+
+    selectFocus() {
+        let focusRow = this.nameTable.querySelector(".focus");
+        if (!focusRow.classList.contains("selected")) {
+            focusRow.classList.add("selected");
+            focusRow.attr.classList.add("selected");
+        }
+        focusRow.classList.remove("focus");
+        focusRow.attr.classList.remove("focus");
+        // move cursor to next
+        let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
+        let i = rows.indexOf(focusRow);
+        if (i < rows.length - 1) {
+            rows[i + 1].classList.add("focus");
+            rows[i + 1].attr.classList.add("focus");
+        }
+    }
+
+    selectAll() {
+        let rows = Array.from(this.nameTable.querySelectorAll("tr:not(.hide)"));
+        rows.forEach(row => {
+            row.classList.add("selected");
+            row.attr.classList.add("selected");
         });
     }
 }

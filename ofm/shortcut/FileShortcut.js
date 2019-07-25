@@ -50,6 +50,15 @@ class FileShortcut {
         return false;
     }
 
+    select() {
+        currentTab.selectFocus();
+        return false;
+    }
+
+    selectAll() {
+        currentTab.selectAll();
+        return false;
+    }
 }
 
 module.exports = FileShortcut;

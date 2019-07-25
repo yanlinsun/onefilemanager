@@ -26,6 +26,10 @@
     background-color: var(--color-file-selected);
 }
 
+.file tr.focus {
+    background-color: var(--color-file-hover);
+}
+
 .file .hidden-file {
     color: var(--color-file-hidden);
 }
