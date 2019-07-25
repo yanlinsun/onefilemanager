@@ -122,6 +122,37 @@ class LocalFileSystem {
         let result = Promise.all(promises);
         return result;
     }
+
+    async copy(srcFs, files, target) {
+        let promises = files.map(f => new Promise((resolve, reject) => {
+            let dest = path.resolve(target.fullpath, f.fullname);
+            fs.copyFile(f.fullpath, dest,
+                (err) => { 
+                    if (err) { 
+                        reject(err);
+                    } else {
+                        resolve(f.fullname);
+                    }
+                });
+        }));
+        let result = Promise.all(promises);
+        return result;
+    }
+
+    async delete(files) {
+        let promises = files.map(f => new Promise((resolve, reject) => {
+            fs.unlink(f.fullpath, 
+                (err) => { 
+                    if (err) { 
+                        reject(err);
+                    } else {
+                        resolve(f.fullname);
+                    }
+                });
+        }));
+        let result = Promise.all(promises);
+        return result;
+    }
 }
 
 module.exports = LocalFileSystem;

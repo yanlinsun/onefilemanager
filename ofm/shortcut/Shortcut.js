@@ -37,7 +37,8 @@ class Shortcut {
                 k = k.replace("commandor", "");
             }
         }
-        return k.replace("control", "ctrl");
+        return k.replace("control", "ctrl")
+                .replace("delete", "del");
     }
 
     static registerAll() {

@@ -13,7 +13,7 @@ class FileShortcut {
         r(key.SelectAll, this.selectAll);
         r(key.Select, this.select);
         r(key.Delete, this.deleteFile);
-        r(key.DeletePermanently, this.deletePermanently);
+        r(key.DeletePermanently, () => this.deleteFile(true));
         r(key.Open, this.open);
     }
 
@@ -32,6 +32,24 @@ class FileShortcut {
         currentTab.open(file);
         return false;
     }
+
+    async copy() {
+        let files = currentTab.getSelectedFiles();
+        let target = opsiteTab.dir;
+        let fs = opsiteTab.fs;
+        let result = await fs.copy(currentTab.fs, files, target);
+        opsiteTab.refresh();
+        return false;
+    }
+
+    async deleteFile(permnanently) {
+        let files = currentTab.getSelectedFiles();
+        let fs = currentTab.fs;
+        let result = await fs.delete(files);
+        currentTab.refresh();
+        return false;
+    }
+
 }
 
 module.exports = FileShortcut;
