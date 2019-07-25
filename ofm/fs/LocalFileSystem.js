@@ -141,14 +141,23 @@ class LocalFileSystem {
 
     async delete(files) {
         let promises = files.map(f => new Promise((resolve, reject) => {
-            fs.unlink(f.fullpath, 
-                (err) => { 
+            if (f.isDirectory) {
+                fs.rmdir(f.fullpath, (err) => { 
                     if (err) { 
                         reject(err);
                     } else {
                         resolve(f.fullname);
                     }
                 });
+            } else {
+                fs.unlink(f.fullpath, (err) => { 
+                    if (err) { 
+                        reject(err);
+                    } else {
+                        resolve(f.fullname);
+                    }
+                });
+            }
         }));
         let result = Promise.all(promises);
         return result;
