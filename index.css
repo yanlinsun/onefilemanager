@@ -72,6 +72,7 @@ body {
     height: -webkit-fill-available;
     min-width: 640px;
     min-height: 480px;
+    -webkit-user-select: none; 
 }
 
 table {
