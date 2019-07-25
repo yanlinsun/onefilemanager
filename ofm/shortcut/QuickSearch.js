@@ -5,7 +5,7 @@ const log = require('../trace/Log.js');
 class QuickSearch {
     constructor(r) {
         r("Esc", this.resetSearch);
-        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789"), (e, key) => this.quickSearch(key));
+        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()_+-={}|[]\\:\";'<>?,./"), (e, key) => this.quickSearch(key));
         this.applyConfig();
     }
 
