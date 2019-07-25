@@ -74,7 +74,11 @@
 }
 
 .listview td.item {
-    padding: 0px 2px;
+    padding: 0px 3px;
+}
+
+.listview td.item span {
+    margin-left: 5px;
 }
 
 .listview .header {

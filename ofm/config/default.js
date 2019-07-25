@@ -10,11 +10,11 @@ const Default = {
     },
 
     Tabs : {
-        Left : [],
-        Right : [],
+        Left : [ homedir ],
+        Right : [ homedir ],
         Active : {
-            Left: null,
-            Right: null
+            Left: homedir,
+            Right: homedir 
         }
     },
 

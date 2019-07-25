@@ -233,7 +233,7 @@ class ListView {
         p.appendChild(i);
 
         if (filterIcon) {
-            i = this.createSvgIcon("filter");
+            let i = this.createSvgIcon("filter");
             i.classList.add("hide");
             p.appendChild(i);
         }

@@ -14,12 +14,18 @@ class Configuration {
         let f = './config/default.toml';
         log.debug("Conf.load enter");
         log.info("Configuration using [%s]", f);
-        let file = fs.readFileSync(f);
-        let config = toml.parse(file);
-        log.debug("---- loaded config ----");
-        log.debug(config);
-        log.debug("-----------------------");
-        config = Util.merge(Default, config);
+        let config;
+        try {
+            let file = fs.readFileSync(f);
+            config = toml.parse(file);
+            log.debug("---- loaded config ----");
+            log.debug(config);
+            log.debug("-----------------------");
+            config = Util.merge(Default, config);
+        } catch (err) {
+            log.error(err);
+            config = Default;
+        }
         log.debug("---- returned config ----");
         log.debug(config);
         log.debug("-------------------------");
