@@ -134,7 +134,7 @@ class ListView {
     }
 
     createList(p) {
-        this.createHeader(p, "Name", "name");
+        this.createHeader(p, "Name", "name", true);
 
         let c = document.createElement("div");
         c.id = "file-name-list";
@@ -192,12 +192,24 @@ class ListView {
 
     createIcon(icon) {
         let i = document.createElement("i");
-        i.classList.add("material-icons");
+        i.classList.add("material-icons-outlined");
         i.innerText = icon;
         return i;
     }
 
-    createHeader(p, name, sortAttr) {
+    createSvgIcon(icon) {
+//        let i = document.createElement("svg");
+//        i.id = 'icon-' + icon;
+//        i.innerHTML = '<use xlinkHref="./icons/common.svg#' + icon + '"></use>';
+
+        let i = document.createElement("img");
+        i.id = 'icon-' + icon;
+        i.src = './icons/' + icon + '.svg';
+        i.classList.add('svg-icon');
+        return i;
+    }
+
+    createHeader(p, name, sortAttr, filterIcon) {
         let i = this.createIcon("keyboard_arrow_down");
         i.classList.add("invisible");
         i.classList.add("sort-icon");
@@ -217,7 +229,14 @@ class ListView {
         c.classList.add("divider");
         p.appendChild(c);
 
+
         p.appendChild(i);
+
+        if (filterIcon) {
+            i = this.createSvgIcon("filter");
+            i.classList.add("hide");
+            p.appendChild(i);
+        }
     }
 
     sort(header, attr) {
@@ -553,6 +572,8 @@ class ListView {
     }
 
     filter(files) {
+        let filterIcon = this.dom.querySelector("#icon-filter");
+        filterIcon.classList.remove("hide");
         Array.from(this.nameTable.rows).forEach(tr => {
             if (files.indexOf(tr.file.name) === -1) {
                 if (!tr.classList.contains("hide")) {
@@ -571,6 +592,8 @@ class ListView {
     }
 
     clearFilter() {
+        let filterIcon = this.dom.querySelector("#icon-filter");
+        filterIcon.classList.add("hide");
         Array.from(this.nameTable.rows).forEach(tr => {
             tr.classList.remove("hide")
             tr.attr.classList.remove("hide");

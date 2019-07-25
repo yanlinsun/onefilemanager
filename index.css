@@ -1,6 +1,7 @@
-@import url(./ofm/css/variable.css);
-@import url(./ofm/css/list-view.css);
-@import url(./ofm/css/file.css);
+@import url(./css/variable.css);
+@import url(./css/list-view.css);
+@import url(./css/file.css);
+@import url(./css/svg-icon.css);
 
 @font-face {
   font-family: 'Material Icons';
@@ -11,7 +12,17 @@
     url(./font/MaterialIcons-Regular.woff) format('woff');
 }
 
-.material-icons {
+@font-face {
+  font-family: 'Material Icons Outlined';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons Outlined'),
+    local('MaterialIcons-Regular-Outlined'),
+    url(./font/MaterialIcons-Outlined.woff2) format('woff2');
+}
+
+.material-icons,
+.material-icons-outlined {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
@@ -36,6 +47,14 @@
 
   /* Support for IE. */
   font-feature-settings: 'liga';
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+}
+
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
 }
 
 * {

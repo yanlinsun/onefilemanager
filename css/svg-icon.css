@@ -1,0 +1,14 @@
+svg {
+    width: 1em;
+    height: 1em;
+}
+
+svg.xl {
+    width: 2em;
+    height: 2em;
+}
+
+.svg-icon {
+    width: 1em;
+    height: 1em;
+}
