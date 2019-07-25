@@ -16,7 +16,7 @@ ipcRenderer.on('init', (event, type) => {
 });
 
 function init() {
-    document.addEventListener("keypress", keypress);
+    document.addEventListener("keydown", keypress);
     document.querySelector("#type_file").onclick = () => create("file");
     document.querySelector("#type_folder").onclick = () => create("folder");
     document.querySelector("#file_name").focus();
@@ -25,7 +25,7 @@ function init() {
 function keypress(e) {
     if (e.key === "Enter") {
         create(defaultType);
-    } else if (e.key === "Esc") {
+    } else if (e.key === "Escape") {
         close();
     }
 }
@@ -34,7 +34,6 @@ function create(type) {
     ipcRenderer.send("FilenameReady", document.querySelector("#file_name").value, type);
     close();
 }
-
 
 function close() {
     log.debug("CreateFile window close");

@@ -11,14 +11,18 @@ class FileShortcut {
         r(key.CreateFile, () => this.createFile());
         r(key.CreateFolder, () => this.createFolder());
         r(key.Edit, this.edit);
-        r(key.CopyToClipboard, this.copyToClipboard);
-        r(key.PasteFromClipboard, this.pasteFromClipboard);
+        //r(key.CopyToClipboard, this.copyToClipboard);
+       // r(key.PasteFromClipboard, this.pasteFromClipboard);
         r(key.SelectAll, this.selectAll);
         r(key.Select, this.select);
         r(key.Delete, this.deleteFile);
         r(key.DeletePermanently, () => this.deleteFile(true));
         r(key.Open, this.open);
         this.init();
+    }
+
+    edit() {
+
     }
 
     init() {
@@ -65,11 +69,11 @@ class FileShortcut {
         return false;
     }
 
-    async deleteFile(permnanently) {
+    async deleteFile(permanently) {
         let files = currentTab.getSelectedFiles();
         if (files.length > 0) {
             let fs = currentTab.fs;
-            let result = await fs.delete(files);
+            let result = await fs.delete(files, permanently);
             currentTab.refresh();
         }
         return false;
@@ -97,8 +101,11 @@ class FileShortcut {
 
     openCreateFileWindow(type, target) {
         let win = new BrowserWindow({
-            width: 400,
-            height: 250,
+            width: 320,
+            height: 120,
+            useContentSize: true,
+            frame: false,
+            titleBarStyle: 'hidden',
             webPreferences: {
                 nodeIntegration: true
             }
@@ -111,7 +118,7 @@ class FileShortcut {
         win.on('blur', function() {
             win.close();
         });
-        win.webContents.on('did-finish-load', () => {
+        win.webContents.on('dom-ready', () => {
             win.webContents.send('init', type, target);
         });
     }

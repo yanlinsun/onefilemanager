@@ -139,7 +139,14 @@ class LocalFileSystem {
         return result;
     }
 
-    async delete(files) {
+    moveToTrash(files) {
+        return files.map(f => shell.moveItemToTrash(f.fullpath));
+    }
+
+    async delete(files, permanently) {
+        if (!permanently) {
+            return this.moveToTrash(files);
+        }
         let promises = files.map(f => new Promise((resolve, reject) => {
             if (f.isDirectory) {
                 fs.rmdir(f.fullpath, (err) => { 
