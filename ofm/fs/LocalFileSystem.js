@@ -163,21 +163,6 @@ class LocalFileSystem {
         return result;
     }
 
-    async createFile(name, target) {
-        let fullpath = path.resolve(target.fullpath, name);
-        let p = new Promise((resolve, reject) => {
-            fs.writeFile(fullpath, "", (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(fullpath);
-                }
-            });
-        });
-        let result = await p;
-        return result;
-    }
-
     async createFolder(name, target) {
         let fullpath = path.resolve(target.fullpath, name);
         let p = new Promise((resolve, reject) => {
@@ -189,6 +174,39 @@ class LocalFileSystem {
                 }
             });
         });
+        let result = await p;
+        return result;
+    }
+
+    async readFile(fullpath) {
+        let p = new Promise((resolve, reject) => {
+            fs.readFile(fullpath, (err, content) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(content);
+                }
+            });
+        });
+        let content = await p;
+        return content;
+    }
+
+    async writeFile(name, target, content) {
+        let fullpath = path.resolve(target.fullpath, name);
+        return await this.writeFile(fullpath, content);
+    }
+
+    async writeFile(fullpath, content) {
+        let p = new Promise((resolve, reject) => {
+                fs.writeFile(fullpath, content ? content : "", (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(fullpath);
+                    }
+                });
+            });
         let result = await p;
         return result;
     }

@@ -18,6 +18,10 @@ const Default = {
         }
     },
 
+    GoogleDrive: {
+        CredentialFile : 'googledrive.credential.json'
+    },
+
     KeyMapping : {
         File : {
             Copy : "F5",

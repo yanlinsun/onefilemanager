@@ -4,7 +4,7 @@ const log = require('../trace/Log.js');
 
 class ErrorView {
     constructor(fs, p, err) {
-        log.debug("ErrorVIew for container [%s]", p.id);
+        log.debug("ErrorView for container [%s]", p.id);
         let c = document.createElement("div");
         c.classList.add("window");
         c.classList.add("error");

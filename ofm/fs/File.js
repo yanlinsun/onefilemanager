@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const hidefile = require('hidefile');
+const FileSystem = require('./FileSystemEnum.js');
 
 const Types = {
     "sh": "Shell Script",
@@ -14,6 +15,7 @@ const Types = {
 class File {
     constructor(dir, file) {
         this.fullpath = path.resolve(dir, file);
+        this.fs = FileSystem.LocalFileSystem;
         this.name = path.basename(file);
         this.ext = path.extname(file);
         this.fullname = file;
