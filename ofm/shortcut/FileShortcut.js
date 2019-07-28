@@ -30,7 +30,7 @@ class FileShortcut {
             log.debug("CreateFile receive filename [%s] type [%s]", name, type);
             if (name && name !== "") {
                 if (type === "file") {
-                    currentTab.fs.createFile(name, currentTab.dir);
+                    currentTab.fs.writeFile(name, currentTab.dir);
                 } else {
                     currentTab.fs.createFolder(name, currentTab.dir);
                 }

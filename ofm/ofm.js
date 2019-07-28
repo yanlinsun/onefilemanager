@@ -1,33 +1,44 @@
 'use strict';
 
+const FileSystem = require('./fs/FileSystemEnum.js');
 const LocalFileSystem = require('./fs/LocalFileSystem.js');
+const CloudFileSystem = require('./fs/CloudFileSystem.js');
 const ListView = require('./view/ListView.js');
 const ErrorView = require('./view/ErrorView.js');
 const log = require('./trace/Log.js');
 
-async function createTab(setting, container) {
-    let i = setting.indexOf(":"), view, dir;
+const Views = [ "ListView", "ThumbView", "QuickPreview", "SlideView" ];
 
-    if (i > 0) {
-        view = setting.substring(0, i);
-        if (view.indexOf("View") == -1) {
-            view = "ListView";
-            dir = setting;
-        } else {
-            dir = setting.substring(i + 1);
-        }
+function parse(setting) {
+    // [ <View> or ListView [| <FS> or Local]|]<fullpath>
+    let p = setting.split("|");
+    let r = {
+        view: Views[0],
+        fs: lfs,
+        fullpath: null
+    };
+    if (p.length > 2) {
+        r.view = Views.indexOf(p[0]) === -1 ? Views[0] : p[0];
+        r.fs = p[1] === "Cloud" ? cloudfs : lfs;
+        r.fullpath = p[2];
+    } else if (p.length > 1) {
+        r.fs = p[0] === "Cloud" ? cloudfs : lfs;
+        r.fullpath = p[1];
     } else {
-        view = "ListView";
-        dir = setting;
+        r.fullpath = setting;
     }
-    switch (view) {
-        case "ListView":
+    return r;
+}
+
+async function createTab(setting, container) {
+    let t = parse(setting);
+    switch (t.view) {
+        case Views[0]:
         default:
-            log.debug("Initialize ListView: [%s] for container [%s]", dir, container.id);
-            let fs = new LocalFileSystem();
+            log.debug("Initialize ListView: [%s] for container [%s]", t.fullpath, container.id);
             let f;
             try {
-                f = await fs.getDir(dir);
+                f = await t.fs.getDir(t.fullpath);
                 log.debug("dir read finished [%s]", container.id);
             } catch (err) {
                 log.error("Error occurs [%s]", container.id);
@@ -36,12 +47,12 @@ async function createTab(setting, container) {
             try {
                 if (!f) {
                     // probably not found, load home dir
-                    log.error("Default directory [%s] not exist, use home dir instead [%s]", dir, container.id);
-                    f = await fs.getHomeDir();
+                    log.error("Default directory [%s] not exist, use home dir instead [%s]", t.fullpath, container.id);
+                    f = await t.fs.getHomeDir();
                 }
-                return new ListView(fs, container, f);
+                return new ListView(t.fs, container, f);
             } catch (err) {
-                return new ErrorView(fs, container, err);
+                return new ErrorView(t.fs, container, err);
             }
             break;
     }
@@ -49,6 +60,10 @@ async function createTab(setting, container) {
 
 async function start() {
     log.verbose("OneFileManager start");
+    // initialize filesystems
+    window.lfs = new LocalFileSystem();
+    window.cloudfs = new CloudFileSystem();
+
     let containers = document.querySelectorAll(".file-container")
     let leftTabs = ofmconfig.Tabs.Left.map(t => createTab(t, containers[0]));
     let rightTabs = ofmconfig.Tabs.Right.map(t => createTab(t, containers[1]));
@@ -69,6 +84,7 @@ async function start() {
     }
     window.opsiteTab = right;
     right.show();
+
 }
 
 module.exports = {

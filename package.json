@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "test": "mocha",
-    "test-debug" : "mocha --inspect-brk"
+    "test-debug": "mocha --inspect-brk"
   },
   "repository": "https://github.com/yanlinsun/onefilemanager.git",
   "keywords": [
@@ -30,5 +30,7 @@
     "sprintf-js": "^1.1.2",
     "toml": "^3.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "googleapis": "^39.2.0"
+  }
 }
