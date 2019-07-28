@@ -7,10 +7,36 @@ class CloudProvider {
             try {
                 await this.connect();
                 this.connected = true;
+                resolve(this.connected);
             } catch (err) {
                 reject(err);
             }
         });
+    }
+    
+    /**
+     * https://accounts.google.com/o/oauth2/approval/v2/approvalnativeapp?
+     * auto=false&response=
+     * code%3D4%2FjwHJjCMYtw9K_GXxFAxsD3Xz5VnenPqD2m9p_8eZPXbYKe6PTpbCfP4
+     * %26scope%3Dhttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly
+     * &approvalCode=4%2FjwHJjCMYtw9K_GXxFAxsD3Xz5VnenPqD2m9p_8eZPXbYKe6PTpbCfP4o
+     * 
+     */
+    handleOAuthUrl(url, win, resolve, reject) {
+        let l = decodeURIComponent(url);
+        var raw_code = /approvalCode=([^&]*)/.exec(l) || null;
+        var code = (raw_code && raw_code.length > 1) ? raw_code[1] : null;
+        var error = /\?error=(.+)$/.exec(l);
+
+        if (code || error) {
+            win.close();
+            if (error) {
+                reject(new Error(error));
+            } else if (code) {
+                code = decodeURI(code);
+                resolve(code);
+            }
+        }
     }
 
     /**

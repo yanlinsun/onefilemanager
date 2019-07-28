@@ -1,9 +1,15 @@
 'use strict';
-const FileSystemName = require('../FileSystemEnum.js').GoogleDrive;
-const CloudProvider = require('../CloudProvider.js');
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
+const { remote } = require('electron');
+const { BrowserWindow, ipcMain } = remote;
+
+const FileSystemName = require('../FileSystemEnum.js').GoogleDrive;
+const CloudProvider = require('../CloudProvider.js');
+const File = require('../File.js');
+const log = require('../../trace/Log.js');
+
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -11,7 +17,6 @@ const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
 // time.
 const TOKEN_FILE = './config/googledrive.token.json';
 const CREDENTIAL_FILE = './config/googledrive.credential.json';
-const log = require('../../trace/Log.js');
 
 class GoogleDrive extends CloudProvider {
     constructor() {
@@ -40,49 +45,52 @@ class GoogleDrive extends CloudProvider {
         let token;
         try {
             token = await lfs.readFile(TOKEN_FILE);
-            log.debug("Google Drive token: %s", credentials);
+            log.debug("Google Drive use saved token: [%s]", token);
+            token = JSON.parse(token);
         } catch (err) {
             if (err.code === 'ENOENT') {
                 token = await this.getAccessToken(this.auth);
-                log.debug("Google Drive token from remote: %s", credentials);
+                log.debug("Google Drive got token from remote: [%s]", JSON.stringify(token));
                 lfs.writeFile(TOKEN_FILE, token);
             } else {
                 throw err;
             }
         }
-        this.auth.setCredentials(JSON.parse(token));
-        this.drive = google.drive({version: 'v3', auth});
+        this.auth.setCredentials(token);
+        this.drive = google.drive({version: 'v3', auth: this.auth});
         return true;
     }
 
     async getAccessToken(oAuth2Client) {
         const authUrl = oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
+            access_type: 'online',
             scope: SCOPES,
         });
-        log.debug('Authorize this app by visiting this url: %s', authUrl);
-        /*const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        });
         let p = new Promise((resolve, reject) => {
-            rl.question('Enter the code from that page here: ', (code) => {
-                rl.close();
-                resolve(code);
+            let code = null;
+            let win = new BrowserWindow({
+                width: 640,
+                height: 480,
             });
-        });
-        let code = await p; */
-let code = '4/jwHmg1iXaHLGYu2h6TkA3zPeqNQCX5SSt7Gmzwtv1da2__96zxHTBSY';
-        let p = new Promise((resolve, reject) => {
-            oAuth2Client.getToken(code, (err, token) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(token);
+            win.loadURL(authUrl);
+            win.on('closed', () => { 
+                win = null;
+                if (!code) {
+                    reject(-1);
                 }
             });
+            win.webContents.on('will-navigate', (e, url) => {
+                log.debug("GoogleDrive navigate: [%s]", url);
+                this.handleOAuthUrl(url, win, resolve, reject);
+            });
+            win.webContents.on('will-redirect', (e, url) => {
+                log.debug("GoogleDrive redirect load: [%s]", url);
+                this.handleOAuthUrl(url, win, resolve, reject);
+            });
         });
-        return await p;
+        let code = await p;
+        log.debug("GoogleDrive got code [%s]", code);
+        return await oAuth2Client.getToken(code);
     }
 
     async disconnect() {
@@ -105,8 +113,9 @@ let code = '4/jwHmg1iXaHLGYu2h6TkA3zPeqNQCX5SSt7Gmzwtv1da2__96zxHTBSY';
         let files = await p;
         return files.map(f => {
             let file = new File(fullpath, f.name);
-            file.fs = FileSystem.GoogleDrive;
+            file.fs = FileSystemName;
             file.id = f.id;
+            return file;
         });
     }
 

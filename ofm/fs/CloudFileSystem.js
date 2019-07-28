@@ -20,7 +20,7 @@ class CloudFileSystem {
     async getProvider(excludeList) {
         let ex = excludeList ? Array.from(excludeList) : null;
         for (let p of this.providers.values()) {
-            if (ex && ex.indexOf(p.name) === -1) {
+            if (!ex || ex.indexOf(p.name) === -1) {
                 if (!p.connected) {
                     await p.connection;
                 }
@@ -36,7 +36,7 @@ class CloudFileSystem {
 
     async getDir(file) {
         let provider = await this.getProvider();
-        let files = await provider.listDir();
+        let files = await provider.listDir(file.fullpath);
         file.children = files;
         return file;
     }
