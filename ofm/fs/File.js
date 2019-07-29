@@ -1,71 +1,36 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
-const hidefile = require('hidefile');
-const FileSystem = require('./FileSystemEnum.js');
-
-const Types = {
-    "sh": "Shell Script",
-    "bat" : "Windows Batch File",
-    "mp3" : "MP3 Audio File",
-    "" : "File"
-}
+const DefaultFileSystem = require('./FileSystemEnum.js').LocalFileSystem;
+const FileType = require('./FileType.js');
 
 class File {
-    constructor(dir, file) {
-        this.fullpath = path.resolve(dir, file);
-        this.fs = FileSystem.LocalFileSystem;
-        this.name = path.basename(file);
-        this.ext = path.extname(file);
-        this.fullname = file;
+    constructor(fullpath, name) {
+        this.fullpath = fullpath;
+        let file = path.parse(fullpath);
+        this.fs = DefaultFileSystem;
+        this.name = file.name;
+        this.fullname = file.base;
+        this.ext = file.ext;
+        if (name) {
+            this.fullname = name;
+            this.name = name;
+        }
+        if (this.ext.length > 0 && this.ext.charAt(0) === '.') {
+            this.ext = this.ext.substring(1);
+        }
+        this.root = file.root;
         this.size = '-';
         this.date = '-';
-        this.type = '-';
         this.isDirectory = false;
         this.isHidden = false;
         if (this.name == '..' || this.name == '.') {
             this.isDirectory = true;
+            this.type = FileType.Directory;
+        } else {
+            this.type = FileType.getFiletype(this.ext);
         }
         this.children = [];
-    }
-
-    parentDir() {
-        let dir = path.resolve(this.fullpath, '..');
-        if (dir != this.fullpath) {
-            return new File(dir, '.');
-        } 
-        return null;
-    }
-
-    async loadAttr() {
-        return new Promise((resolve, reject) => {
-            hidefile.isHidden(this.fullpath, (err, flag) => {
-                this.isHidden = flag;
-                fs.stat(this.fullpath, (err, stats) => {
-                    if (err) {
-                        resolve(this);
-                    } else {
-                        this.size = stats.size;
-                        this.date = new Date(stats.ctimeMs);
-                        this.type = this.determineType(stats);
-                        this.isDirectory = stats.isDirectory();
-                        resolve(this);
-                    }
-                });
-            });
-        });
-    }
-
-    determineType(stats) {
-        if (stats.isDirectory()) {
-            return "Directory";
-        }
-        return Types[this.ext] || Types[""];
-    }
-
-    add(f) {
-        this.children.add(f);
     }
 }
 

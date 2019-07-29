@@ -2,19 +2,17 @@
 
 const os = require('os');
 
-const homedir = os.homedir();
-
 const Default = {
     General : {
         ShowHidden : false,
     },
 
     Tabs : {
-        Left : [ homedir ],
-        Right : [ homedir ],
+        Left : [ ],
+        Right : [ ],
         Active : {
-            Left: homedir,
-            Right: homedir 
+            Left: null,
+            Right: null
         }
     },
 

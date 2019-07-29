@@ -2,7 +2,7 @@
 
 const os = require('os');
 const filesize = require('filesize');
-const { ExtFileType, TypeIcon } = require('../fs/FileType.js');
+const FileType = require('../fs/FileType.js');
 const log = require('../trace/Log.js');
 
 const FileAttr = {
@@ -32,7 +32,6 @@ class ListView {
             p.views = new Map();
         }
         p.views.set(dir.fullpath, this);
-        dir.children.forEach(f => this.displayFile(f));
     }
 
     registerListener() {
@@ -299,14 +298,8 @@ class ListView {
         }
         let namerow = this.nameTable.insertRow();
         namerow.file = f;
-        let icon = "default";
-        if (f.isDirectory) {
-            icon = "folder";
-        } else if (ExtFileType[f.ext]) {
-            icon = ExtFileType[f.ext];
-        }
-        let itemOption = { rightAlign: false, icon: TypeIcon[icon], hidden: f.isHidden };
-        this.createItem(namerow, f.name, itemOption);
+        let itemOption = { rightAlign: false, icon: f.type.icon, hidden: f.isHidden };
+        this.createItem(namerow, f.fullname, itemOption);
         let attrrow = this.attrTable.insertRow();
         namerow.attr = attrrow;
         itemOption.icon = null;
@@ -314,7 +307,7 @@ class ListView {
         this.createItem(attrrow, isNaN(f.size) ? f.size : filesize(f.size), itemOption);
         itemOption.rightAlign = false;
         this.createItem(attrrow, f.date, itemOption);
-        this.createItem(attrrow, f.type, itemOption);
+        this.createItem(attrrow, f.type.description, itemOption);
         namerow.onmouseover = () => {
             namerow.classList.add("hover");
             attrrow.classList.add("hover");
@@ -392,9 +385,18 @@ class ListView {
         this.blur();
     }
 
-    show(focus) {
+    async show(focus) {
         this.dom.classList.remove("hide");
         if (!this.uiAdjusted) {
+            let files;
+            try {
+                files = await this.fs.listDir(this.dir);
+            } catch (err) {
+                log.error(err);
+                this.dir = await this.fs.getHomeDir();
+                files = await this.fs.listDir(this.dir);    
+            }
+            files.forEach(f => this.displayFile(f));
             window.setTimeout(() => this.adjustUI(), 0);
             this.uiAdjusted = true;
         }

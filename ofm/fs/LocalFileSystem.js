@@ -3,8 +3,10 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const File = require('./File.js');
 const shell = require('electron').shell;
+const hidefile = require('hidefile');
+const File = require('./File.js');
+const FileType = require('./FileType.js');
 const cache = require('./Cache.js');
 const log = require('../trace/Log.js');
 
@@ -13,34 +15,54 @@ class LocalFileSystem {
     }
 
     async getHomeDir() {
-        return await this.getDir(os.homedir());
+        return await this.getFile(os.homedir());
     }
 
-    async getDir(fullpath) {
-        log.debug("lfs get directory [%s]", fullpath);
-        let f = cache.get(fullpath);
-        if (!f) {
-            log.debug("lfs [%s] not in cache, read from fs", fullpath);
-            f = new File(fullpath, '.');
-            let p = new Promise(async (resolve, reject) => {
-                try {
-                    await this.listDir(f);
-                    resolve(f);
-                } catch (err) {
-                    reject(err);
-                }
+    async getParentFile(file) {
+        let dir = path.resolve(file.fullpath, '..');
+        if (dir != file.fullpath) {
+            return new File(dir);
+        } 
+        return null;
+    }
+
+    async getFileAttr(file) {
+        let p = new Promise((resolve, reject) => {
+            hidefile.isHidden(file.fullpath, (err, flag) => {
+                file.isHidden = flag;
+                fs.stat(file.fullpath, (err, stats) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        file.size = stats.size;
+                        file.date = new Date(stats.ctimeMs);
+                        if (stats.isDirectory()) {
+                            file.isDirectory = true;
+                            file.type = FileType.Directory;
+                        }
+                        resolve(file);
+                    }
+                });
             });
-            log.debug("lfs set awaitable fs reading process for [%s]", fullpath);
+        });
+        return await p;
+    }
+
+    async getFile(fullpath, bypassCache) {
+        log.debug("lfs get [%s]", fullpath);
+        let f = cache.get(fullpath);
+        if (!f || bypassCache) {
+            log.debug("lfs [%s] not in cache, read from fs", fullpath);
+            f = new File(fullpath);
+            let p = this.getFileAttr(f);
             cache.set(fullpath, p);
-            f = await p;
+            await p;
+            log.debug("lfs [%s] read from fs finished", fullpath);
             cache.set(fullpath, f);
-            log.debug("lfs reading process for [%s] finished", fullpath);
-            log.debug(f);
         } else if (f instanceof Promise) {
-            log.debug("lfs got awaitable fs reading process for [%s] from cache", fullpath);
+            log.debug("lfs [%s] awaitable in cache, wait", fullpath);
             f = await f;
-            log.debug("lfs awaitable fs reading process for [%s] finished", fullpath);
-            log.debug(f);
+            log.debug("lfs [%s] awaitable finished", fullpath);
         } else if (f instanceof File) {
             log.debug("lfs read [%s] from cache", fullpath);
         }
@@ -58,7 +80,7 @@ class LocalFileSystem {
             return dir.children;
         }
         log.debug("lfs list [%s] from fs", dir.fullpath);
-        let p = new Promise((resolve, reject) => {
+        let loading = new Promise((resolve, reject) => {
             fs.readdir(dir.fullpath, { withFileTypes: false }, (err, files) => {
                 if (err) {
                     reject(err);
@@ -68,22 +90,16 @@ class LocalFileSystem {
 
             });
         });
-        let files = await p;
+        let files = await loading;
         log.debug("lfs list [%s] loaded [%i] files", dir.fullpath, files.length);
-        files = files.map(f => {
-            let file = new File(dir.fullpath, f);
-            log.debug("lfs read file [%s]", f);
-            file.parentFile = dir;
-            return file.loadAttr();
-        });
+        files = files.map(f => this.getFile(path.resolve(dir.fullpath, f)));
         log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
         files = await Promise.all(files);
         log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
         let parentDir = path.resolve(dir.fullpath, '..');
         if (parentDir != dir.fullpath) {
             // not root folder
-            let parentFile = new File(dir.fullpath, '..');
-            //parentFile.view = dir.view;
+            let parentFile = new File(parentDir, '..');
             files = [parentFile, ...files];
         }
         dir.children = files;

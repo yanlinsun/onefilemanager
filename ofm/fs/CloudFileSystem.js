@@ -30,7 +30,7 @@ class CloudFileSystem {
     }
 
     async getHomeDir() {
-        let file = new File("/", '.');
+        let file = new File("/", '.', true);
         return await this.getDir(file);
     }
 
