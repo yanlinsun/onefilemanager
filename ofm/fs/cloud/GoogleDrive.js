@@ -138,7 +138,7 @@ class GoogleDrive extends CloudProvider {
         let files = await p;
         return files.map(f => {
             let file = new File(fullpath, f.name);
-            file.fs = FileSystemName;
+            file.fs = this.provider;
             file.id = f.id;
             return file;
         });

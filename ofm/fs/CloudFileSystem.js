@@ -53,8 +53,8 @@ class CloudFileSystem {
     }
 
     async getHomeDir() {
-        let file = new File("/", '.', true);
-        return await this.getDir(file);
+        let file = await this.getFile("/");
+        return await this.listDir(file);
     }
 
     async getParentFile(file) {
@@ -65,16 +65,17 @@ class CloudFileSystem {
         throw new Error("Not implemented yet");
     }
 
-    async getFile(file, bypassCache) {
-        let provider = await this.getProvider();
-        let files = await provider.listDir(file.fullpath);
-        file.children = files;
-        return file;
+    async getFile(fullpath, bypassCache) {
+        let f = new File(fullpath);
+        f.fs = this.name;
+        return f;
     }
 
     async listDir(directory, bypassCache) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        let files = await provider.listDir(directory.fullpath);
+        directory.children = files;
+        return files;
     }
 
     async open(file) {
