@@ -131,6 +131,10 @@ function toUser(msg, ...args) {
     return log(0, msg, ...args);
 }
 
-module.exports = { init, debug, error, warning, info, verbose, warn, toUser,
+function printf(msg, ...args) {
+    return sprintf(msg, ...args);
+}
+
+module.exports = { init, debug, error, warning, info, verbose, warn, toUser, printf,
     // for testing only
     setting };

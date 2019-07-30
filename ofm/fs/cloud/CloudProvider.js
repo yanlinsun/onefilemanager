@@ -1,17 +1,9 @@
 'use strict';
 
 class CloudProvider {
-    constructor() {
-        this.connected = false;
-        this.connection = new Promise(async (resolve, reject) => {
-            try {
-                await this.connect();
-                this.connected = true;
-                resolve(this.connected);
-            } catch (err) {
-                reject(err);
-            }
-        });
+    constructor(fsname) {
+        this.name = fsname;
+        this.connection = this.connect();
     }
     
     /**

@@ -32,7 +32,14 @@ class LocalFileSystem {
                 file.isHidden = flag;
                 fs.stat(file.fullpath, (err, stats) => {
                     if (err) {
-                        reject(err);
+                        if (err.code === 'EPERM' ||
+                            err.code === 'EACCES') {
+                            file.accessible = false;
+                            log.error("File [%s] not accessible: %s", file.fullpath, err.message);
+                            resolve(file);
+                        } else {
+                            reject(err);
+                        }
                     } else {
                         file.size = stats.size;
                         file.date = new Date(stats.ctimeMs);

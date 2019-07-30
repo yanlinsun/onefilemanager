@@ -6,7 +6,7 @@ const { remote } = require('electron');
 const { BrowserWindow, ipcMain } = remote;
 
 const FileSystemName = require('../FileSystemEnum.js').GoogleDrive;
-const CloudProvider = require('../CloudProvider.js');
+const CloudProvider = require('./CloudProvider.js');
 const File = require('../File.js');
 const log = require('../../trace/Log.js');
 
@@ -42,19 +42,25 @@ class GoogleDrive extends CloudProvider {
         const {client_secret, client_id, redirect_uris} = credentials.installed;
         this.auth = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-        let token;
+        let token, file;
         try {
+            file = await lfs.getFile(TOKEN_FILE);
+        } catch (err) {
+            if (err.code !== 'ENOENT') {
+                throw err;
+            }
+        }
+        if (file) {
             token = await lfs.readFile(TOKEN_FILE);
             log.debug("Google Drive use saved token: [%s]", token);
             token = JSON.parse(token);
-        } catch (err) {
-            if (err.code === 'ENOENT') {
-                token = await this.getAccessToken(this.auth);
-                log.debug("Google Drive got token from remote: [%s]", JSON.stringify(token));
-                lfs.writeFile(TOKEN_FILE, token);
-            } else {
-                throw err;
+            if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
+                log.debug("Google Token expires");
+                token = null;
             }
+        }
+        if (!token) {
+            token = await this.getAccessToken(this.auth);
         }
         this.auth.setCredentials(token);
         this.drive = google.drive({version: 'v3', auth: this.auth});
@@ -76,7 +82,10 @@ class GoogleDrive extends CloudProvider {
             win.on('closed', () => { 
                 win = null;
                 if (!code) {
-                    reject(-1);
+                    let err = new Error("User cancelled");
+                    err.code = 'ECANCELLED';
+                    err.message = "User cancelled";
+                    reject(err);
                 }
             });
             win.webContents.on('will-navigate', (e, url) => {
@@ -90,7 +99,10 @@ class GoogleDrive extends CloudProvider {
         });
         let code = await p;
         log.debug("GoogleDrive got code [%s]", code);
-        return await oAuth2Client.getToken(code);
+        let token = await oAuth2Client.getToken(code);
+        log.debug("Google Drive got token from remote: [%s]", JSON.stringify(token));
+        lfs.writeFile(TOKEN_FILE, token);
+        return token;
     }
 
     async disconnect() {

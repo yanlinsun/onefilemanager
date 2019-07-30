@@ -31,6 +31,7 @@ class File {
             this.type = FileType.getFiletype(this.ext);
         }
         this.children = [];
+        this.accessible = true;
     }
 }
 

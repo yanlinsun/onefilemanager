@@ -48,30 +48,41 @@ function parse(setting) {
     return r;
 }
 
+async function getFile(t) {
+    let f;
+    try {
+        f = await t.fs.getFile(t.fullpath);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            log.error("[%s] Use home dir instead", container.id);
+            t.message = log.printf("%s not found, use home dir instead", t.fullpath);
+            f = await t.fs.getHomeDir();
+        } else if (err.code === 'ECLOUDNOCONN') {
+            log.error("[%s] Use LocalFileSystem home dir instead", container.id);
+            t.message = log.printf("Cloud initialized failed, use home dir instead", t.fullpath);
+            t.fs = window.lfs;
+            t.fullpath = t.fs.getHomeDir();
+            f = await t.fs.getHomeDir();
+        } else {
+            throw err;
+        }
+    }
+    return f;
+}
+
 async function createTab(setting, container) {
     let t = parse(setting);
     log.debug("Create Tab %s: [%s] for container [%s]", Views[0], t.fullpath, container.id);
-    switch (t.view) {
-        case Views[0]:
-        default:
-            let f;
-            try {
-                f = await t.fs.getFile(t.fullpath);
-            } catch (err) {
-                log.error("File [%s] read error [%s]", t.fullpath, container.id);
-                log.error(err);
-            }
-            try {
-                if (!f) {
-                    // probably not found, load home dir
-                    log.error("Use home dir instead [%s]", container.id);
-                    f = await t.fs.getHomeDir();
-                }
-                return new ListView(t.fs, container, f);
-            } catch (err) {
-                return new ErrorView(t.fs, container, err);
-            }
-            break;
+    try {
+        let f = await getFile(t);
+        switch (t.view) {
+            case Views[0]:
+            default:
+                return new ListView(t.fs, container, f, t.message);
+                break;
+        }
+    } catch (err) {
+        return new ErrorView(t.fs, container, err);
     }
 }
 
