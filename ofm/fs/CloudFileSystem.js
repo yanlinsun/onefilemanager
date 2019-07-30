@@ -10,7 +10,7 @@ class CloudFileSystem {
     }
 
     initProviders() {
-        this.providers.push(new GoogleDrive());
+        this.providers.push(new GoogleDrive('Default'));
     }
 
     /** 
@@ -26,16 +26,20 @@ class CloudFileSystem {
                     // not login or expired, try again
                     p.connection = p.connect();
                     c = await p.connection;
-                    if (c === -1) {
-                        let err = new Error("No connection to cloud provider");
-                        err.code = 'ECLOUDNOCONN';
-                        err.message = 'No connection to cloud provider';
-                        throw err;
-                    }
                 }
                 return p;
             }
         }
+    }
+
+    async isAllConnected() {
+        for (let p of this.providers.values()) {
+            let c = await p.connection;
+            if (!c) {
+                return false;
+            }
+        }
+        return true;
     }
 
     async download(file) {

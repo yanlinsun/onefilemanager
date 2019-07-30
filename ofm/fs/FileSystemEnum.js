@@ -2,11 +2,6 @@
 
 const FileSystem = {
     CloudFileSystem: "CloudFileSystem",
-    GoogleDrive: "GoogleDrive",
-    Dropbox: "Dropbox",
-    BaiduPan: "BaiduPan",
-    OneDrive: "OneDrive",
-    Mega: "Mega",
     LocalFileSystem: "LocalFileSystem"
 };
 

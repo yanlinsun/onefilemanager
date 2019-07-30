@@ -1,8 +1,9 @@
 'use strict';
 
 class CloudProvider {
-    constructor(fsname) {
-        this.name = fsname;
+    constructor(name, provider) {
+        this.name = name;
+        this.provider = provider;
         this.connection = this.connect();
     }
     

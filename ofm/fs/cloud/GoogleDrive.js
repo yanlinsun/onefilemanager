@@ -5,7 +5,7 @@ const {google} = require('googleapis');
 const { remote } = require('electron');
 const { BrowserWindow, ipcMain } = remote;
 
-const FileSystemName = require('../FileSystemEnum.js').GoogleDrive;
+const ProviderName = require('./Provider.js').GoogleDrive;
 const CloudProvider = require('./CloudProvider.js');
 const File = require('../File.js');
 const log = require('../../trace/Log.js');
@@ -15,12 +15,16 @@ const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
-const TOKEN_FILE = './config/googledrive.token.json';
-const CREDENTIAL_FILE = './config/googledrive.credential.json';
+let TOKEN_FILE = './config/googledrive.token.json';
+let CREDENTIAL_FILE = './config/googledrive.credential.json';
 
 class GoogleDrive extends CloudProvider {
-    constructor() {
-        super(FileSystemName);
+    constructor(name) {
+        super(name, ProviderName);
+        if (name !== 'Default') {
+            TOKEN_FILE = './config/googledrive.' + name.toLowerCase() + '.token.json';
+            CREDENTIAL_FILE = './config/googledrive.' + name.toLowerCase() + '.credential.json';
+        }
     }
 
     getProperty() {
@@ -35,7 +39,7 @@ class GoogleDrive extends CloudProvider {
     async getUserProperty() {
     }
 
-    async connect() {
+    async connect(showLoginScreen) {
         let credentials = await lfs.readFile(CREDENTIAL_FILE);
         log.debug("Google Drive credentials: %s", credentials);
         credentials = JSON.parse(credentials);
@@ -51,16 +55,25 @@ class GoogleDrive extends CloudProvider {
             }
         }
         if (file) {
-            token = await lfs.readFile(TOKEN_FILE);
-            log.debug("Google Drive use saved token: [%s]", token);
-            token = JSON.parse(token);
-            if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
-                log.debug("Google Token expires");
+            try {
+                token = await lfs.readFile(TOKEN_FILE);
+                log.debug("Google Drive use saved token: [%s]", token);
+                token = JSON.parse(token);
+                if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
+                    log.debug("Google Token expires");
+                    token = null;
+                }
+            } catch (err) {
+                log.error(err);
                 token = null;
             }
         }
         if (!token) {
-            token = await this.getAccessToken(this.auth);
+            if (showLoginScreen) {
+                token = await this.getAccessToken(this.auth);
+            } else {
+                return false;
+            }
         }
         this.auth.setCredentials(token);
         this.drive = google.drive({version: 'v3', auth: this.auth});
@@ -99,9 +112,9 @@ class GoogleDrive extends CloudProvider {
         });
         let code = await p;
         log.debug("GoogleDrive got code [%s]", code);
-        let token = await oAuth2Client.getToken(code);
+        let { token } = await oAuth2Client.getToken(code);
         log.debug("Google Drive got token from remote: [%s]", JSON.stringify(token));
-        lfs.writeFile(TOKEN_FILE, token);
+        lfs.writeFile(TOKEN_FILE, JSON.stringify(token));
         return token;
     }
 

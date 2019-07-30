@@ -14,6 +14,10 @@ class LocalFileSystem {
     constructor() {
     }
 
+    homeDir() {
+        return os.homedir();
+    }
+
     async getHomeDir() {
         return await this.getFile(os.homedir());
     }
