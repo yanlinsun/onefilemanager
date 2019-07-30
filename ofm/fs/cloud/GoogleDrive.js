@@ -59,9 +59,16 @@ class GoogleDrive extends CloudProvider {
                 token = await lfs.readFile(TOKEN_FILE);
                 log.debug("Google Drive use saved token: [%s]", token);
                 token = JSON.parse(token);
-                if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
-                    log.debug("Google Token expires");
-                    token = null;
+                if (token.expires_in) {
+                    if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
+                        log.debug("Google Token expires");
+                        token = null;
+                    }
+                } else if (token.expiry_date) {
+                    if (new Date().getTime() >= token.expiry_date) {
+                        log.debug("Google Token expires");
+                        token = null;
+                    }
                 }
             } catch (err) {
                 log.error(err);

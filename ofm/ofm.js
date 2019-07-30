@@ -1,5 +1,7 @@
 'use strict';
 
+const Configuration = require('./config/Configuration.js');
+const Shortcut = require('./shortcut/Shortcut.js');
 const FileSystem = require('./fs/FileSystemEnum.js');
 const LocalFileSystem = require('./fs/LocalFileSystem.js');
 const DelayLocalFileSystem = require('./fs/DelayLocalFileSystem.js');
@@ -113,7 +115,10 @@ async function startTab(tabs, container, activeTab) {
 }
 
 async function start() {
+    window.ofmconfig = Configuration.load();
+    log.init();
     log.verbose("OneFileManager start");
+    Shortcut.registerAll();
 
     initFilesystems();
 

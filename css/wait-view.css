@@ -1,0 +1,34 @@
+.waitview {
+    --color-button: hsl(216,100%,70%);
+    --color-button-font: hsl(0,0%,100%);
+}
+
+.waitview .item {
+    flex: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.waitview .item *:not(div) {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.waitview .hplaceholder {
+    height: 50%;
+}
+
+.waitview .wplaceholder {
+    width: 50%;
+}
+
+.waitview button {
+    width: -webkit-fill-available;
+    background-color: var(--color-button);
+    color: var(--color-button-font);
+    border: 1px solid;
+    padding: 5px;
+}
+.waitview button.wide {
+    width: 200px;
+}

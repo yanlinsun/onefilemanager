@@ -11,7 +11,7 @@ class WaitView {
         log.debug("WaitView for container [%s]", p.id);
         let c = document.createElement("div");
         c.classList.add("window");
-        c.classList.add("wait");
+        c.classList.add("waitview");
         c.classList.add("container-one-column");
         p.appendChild(c);
         this.dom = c;
@@ -35,24 +35,52 @@ class WaitView {
     createUI(p) {
         let dom = p;
         let c = document.createElement("div");
+        c.classList.add("hplaceholder");
+        dom.appendChild(c);
+
+        c = document.createElement("div");
         c.classList.add("container-one-row");
-        p.appendChild(c);
+        c.classList.add("item");
+        dom.appendChild(c);
         p = c;
 
+        c = document.createElement("div");
+        c.classList.add("wplaceholder");
+        p.appendChild(c);
+         
         c = document.createElement("button");
-        c.value = "Open Home Dir from Local Computer";
+        c.classList.add("wide");
+        c.innerText = "Open Home Dir from Local Computer";
         c.onclick = () => switchLocalFS();
-        this.fs.providers.forEach(provider => this.createButton(provider, dom));
+        p.appendChild(c);
+
+        c = document.createElement("div");
+        c.classList.add("wplaceholder");
+        p.appendChild(c);
+
+        for (let provider of this.fs.providers.values()) {
+            this.createButton(provider, dom);
+        }
+
+        c = document.createElement("div");
+        c.classList.add("hplaceholder");
+        dom.appendChild(c);
     }
 
     async createButton(provider, p) {
         let f = await provider.connection;
         let c = document.createElement("div"); 
         c.classList.add("container-one-row");
+        c.classList.add("item");
         p.appendChild(c);
         p = c;
         
-        this.createProviderIcon(provider.provider, c);
+        c = document.createElement("div");
+        c.classList.add("wplaceholder");
+        p.appendChild(c);
+
+        this.createProviderIcon(provider.provider, p);
+
         c = document.createElement("span");
         c.innerText = provider.name;
         p.appendChild(c);
@@ -68,6 +96,10 @@ class WaitView {
                 this.check();
             };
         }
+        p.appendChild(c);
+
+        c = document.createElement("div");
+        c.classList.add("wplaceholder");
         p.appendChild(c);
     }
 

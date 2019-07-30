@@ -1,7 +1,8 @@
-@import url(./css/variable.css);
-@import url(./css/list-view.css);
-@import url(./css/file.css);
-@import url(./css/svg-icon.css);
+@import url(./variable.css);
+@import url(./list-view.css);
+@import url(./wait-view.css);
+@import url(./file.css);
+@import url(./svg-icon.css);
 
 @font-face {
   font-family: 'Material Icons';
@@ -9,7 +10,7 @@
   font-weight: 400;
   src: local('Material Icons'),
     local('MaterialIcons-Regular'),
-    url(./font/MaterialIcons-Regular.woff) format('woff');
+    url(../font/MaterialIcons-Regular.woff) format('woff');
 }
 
 @font-face {
@@ -18,7 +19,7 @@
   font-weight: 400;
   src: local('Material Icons Outlined'),
     local('MaterialIcons-Regular-Outlined'),
-    url(./font/MaterialIcons-Outlined.woff2) format('woff2');
+    url(../font/MaterialIcons-Outlined.woff2) format('woff2');
 }
 
 .material-icons,
