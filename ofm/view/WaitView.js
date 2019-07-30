@@ -42,6 +42,12 @@ class WaitView {
         c.classList.add("container-one-row");
         c.classList.add("item");
         dom.appendChild(c);
+        this.createMessage(c);
+
+        c = document.createElement("div");
+        c.classList.add("container-one-row");
+        c.classList.add("item");
+        dom.appendChild(c);
         p = c;
 
         c = document.createElement("div");
@@ -51,7 +57,7 @@ class WaitView {
         c = document.createElement("button");
         c.classList.add("wide");
         c.innerText = "Open Home Dir from Local Computer";
-        c.onclick = () => switchLocalFS();
+        c.onclick = () => this.switchLocalFS();
         p.appendChild(c);
 
         c = document.createElement("div");
@@ -65,6 +71,20 @@ class WaitView {
         c = document.createElement("div");
         c.classList.add("hplaceholder");
         dom.appendChild(c);
+    }
+
+    createMessage(p) {
+        let c = document.createElement("div");
+        c.classList.add("wplaceholder");
+        p.appendChild(c);
+
+        c = document.createElement("span");
+        c.innerText = "Not all cloud provider are connected.";
+        p.appendChild(c);
+
+        c = document.createElement("div");
+        c.classList.add("wplaceholder");
+        p.appendChild(c);
     }
 
     async createButton(provider, p) {
