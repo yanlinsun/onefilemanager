@@ -120,9 +120,9 @@ class GoogleDrive extends CloudProvider {
         let code = await p;
         log.debug("GoogleDrive got code [%s]", code);
         let { tokens } = await oAuth2Client.getToken(code);
-        log.debug("Google Drive got token from remote: [%s]", JSON.stringify(token));
-        lfs.writeFile(TOKEN_FILE, JSON.stringify(token));
-        return token;
+        log.debug("Google Drive got token from remote: [%s]", JSON.stringify(tokens));
+        lfs.writeFile(TOKEN_FILE, JSON.stringify(tokens));
+        return tokens;
     }
 
     async disconnect() {
