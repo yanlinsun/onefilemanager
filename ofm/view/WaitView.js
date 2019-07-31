@@ -8,7 +8,7 @@ const ListView = require('./ListView.js');
 
 class WaitView {
     constructor(fs, p, view, fullpath) {
-        log.debug("WaitView for container [%s]", p.id);
+        log.debug("WaitView for container [%s] original view %s path [%s] %s", p.id, view, fullpath, fs.name);
         let c = document.createElement("div");
         c.classList.add("window");
         c.classList.add("waitview");
@@ -32,7 +32,7 @@ class WaitView {
         }
     }
 
-    createUI(p) {
+    async createUI(p) {
         let dom = p;
         let c = document.createElement("div");
         c.classList.add("hplaceholder");
@@ -64,9 +64,8 @@ class WaitView {
         c.classList.add("wplaceholder");
         p.appendChild(c);
 
-        for (let provider of this.fs.providers.values()) {
-            this.createButton(provider, dom);
-        }
+        let ary = this.fs.providers.map(provider => this.createButton(provider, dom));
+        await Promise.all(ary);
 
         c = document.createElement("div");
         c.classList.add("hplaceholder");
@@ -79,6 +78,7 @@ class WaitView {
         p.appendChild(c);
 
         c = document.createElement("span");
+        c.classList.add("full-width");
         c.innerText = "Not all cloud provider are connected.";
         p.appendChild(c);
 
@@ -142,10 +142,10 @@ class WaitView {
     }
 
     async switchTo(fs, viewType, fullpath) {
-        log.debug("WaitView switch to %s [%]", viewType, fullpath);
+        log.debug("WaitView switch to %s [%s]", viewType, fullpath);
         let view;
-        switch (viewtype.toLowerCase()) {
-            case ViewTypes.ListView:
+        switch (viewType.toLowerCase()) {
+            case Views.ListView:
             default:
                 let f = await fs.getFile(fullpath);
                 view = new ListView(fs, this.dom.parentNode, f);

@@ -34,12 +34,12 @@ function parse(setting) {
     // [ <View> or ListView [| <FS> or Local]|]<fullpath>
     let p = setting.split("|");
     let r = {
-        view: Views[0],
-        fs: lfs,
+        view: Views.ListView,
+        fs: window.lfs,
         fullpath: null
     };
     if (p.length > 2) {
-        r.view = Views.AllTypes.indexOf(p[0]) === -1 ? Views[0] : p[0];
+        r.view = Views.AllTypes.indexOf(p[0]) === -1 ? Views.ListView : p[0];
         r.fs = getFilesystem(p[1]);
         r.fullpath = p[2];
     } else if (p.length > 1) {
@@ -110,7 +110,7 @@ async function startTab(tabs, container, activeTab) {
             break;
         }
     }
-    tab.show();
+    await tab.show();
     return tab;
 }
 

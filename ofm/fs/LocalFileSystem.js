@@ -8,10 +8,12 @@ const hidefile = require('hidefile');
 const File = require('./File.js');
 const FileType = require('./FileType.js');
 const cache = require('./Cache.js');
+const FileSystem = require('./FileSystemEnum.js');
 const log = require('../trace/Log.js');
 
 class LocalFileSystem {
     constructor() {
+        this.name = FileSystem.LocalFileSystem;
     }
 
     homeDir() {

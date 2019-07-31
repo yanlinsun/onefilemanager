@@ -1,10 +1,12 @@
 'use strict';
 
+const FileSystem = require('./FileSystemEnum.js');
 const GoogleDrive = require('./cloud/GoogleDrive.js');
 const File = require('./File.js');
 
 class CloudFileSystem {
     constructor() {
+        this.name = FileSystem.CloudFileSystem;
         this.providers = [];
         this.initProviders();
     }
