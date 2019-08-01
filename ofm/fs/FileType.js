@@ -11,8 +11,9 @@ const TypeIcon = {
 }
 
 // file extension to icon mapping
-const FileType = {
+const All = {
     "Directory" : { description : "Directory", icon : TypeIcon.folder },
+    "ParentFolder" : { description : "Parent Folder", icon : TypeIcon.folder },
     "File" : { description : "File", icon : TypeIcon.default },
     // video
     "mp4" : { description : "MP4 Video", icon : TypeIcon.video },
@@ -60,9 +61,10 @@ const FileType = {
     "toml" : { description : "TOML Configuration", icon : TypeIcon.default },
     "css" : { description : "CSS Source", icon : TypeIcon.default },
 
-    // misc
+    // txt files
     "vim" : { description : "VIM File", icon : TypeIcon.default },
-    "vim" : { description : "Mark Down File", icon : TypeIcon.default },
+    "md" : { description : "Mark Down File", icon : TypeIcon.default },
+    "txt" : { description : "Plain Text", icon : TypeIcon.default },
 
     // windows
     "cmd" : { description : "Windows Command Script", icon : TypeIcon.default },
@@ -73,19 +75,19 @@ const FileType = {
     // mac
     "app" : { description : "Mac Application", icon : TypeIcon.default },
 
-
-    // default
-    "txt" : { description : "Plain Text", icon : TypeIcon.default }
+    // others
+    "map" : { description : "Map File", icon : TypeIcon.default }
 }
 
 function getFiletype(ext) {
-    if (FileType[ext.toLowerCase()]) {
-        return FileType[ext.toLowerCase()];
+    if (All[ext.toLowerCase()]) {
+        return All[ext.toLowerCase()];
     } else {
-        return FileType["File"];
+        return All["File"];
     }
 }
 
-const Directory = FileType["Directory"];
+const Directory = All["Directory"];
+const ParentFolder = All["ParentFolder"];
 
-module.exports = { getFiletype, Directory };
+module.exports = { getFiletype, Directory, TypeIcon, All, ParentFolder };

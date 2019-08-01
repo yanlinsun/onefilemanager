@@ -22,16 +22,47 @@ class File {
         this.root = file.root;
         this.size = '-';
         this.date = '-';
-        this.isDirectory = false;
+        this._directory = false;
         this.isHidden = false;
-        if (this.name == '..' || this.name == '.') {
-            this.isDirectory = true;
-            this.type = FileType.Directory;
-        } else {
-            this.type = FileType.getFiletype(this.ext);
-        }
-        this.children = [];
+        this.type = FileType.getFiletype(this.ext);
+        this._children = [];
         this.accessible = true;
+        this.cloudProvider = null;
+        if (this.name == '..') {
+            this._directory = true;
+            this.type = FileType.ParentFolder;
+        }
+    }
+
+    set isDirectory(flag) {
+        this._directory = true;
+        this.type = FileType.Directory;
+        this.size = '-';
+        let parentDir = path.resolve(this.fullpath, '..');
+        if (parentDir != this.fullpath) {
+            // not root folder
+            this.parentFolder = new File(parentDir, '..');
+            this.parentFolder.fs = this.fs;
+            this.parentFolder.cloudProvider = this.cloudProvider;
+        }
+    }
+
+    get isDirectory() {
+        return this._directory;
+    }
+
+    set children(files) {
+        if (this.isDirectory) {
+            if (this.parentFolder) {
+                this._children = [ this.parentFolder, ...files ];
+            } else {
+                this._children = files.slice();
+            }
+        }
+    }
+
+    get children() {
+        return this._children;
     }
 }
 

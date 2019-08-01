@@ -109,14 +109,8 @@ class LocalFileSystem {
         log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
         files = await Promise.all(files);
         log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
-        let parentDir = path.resolve(dir.fullpath, '..');
-        if (parentDir != dir.fullpath) {
-            // not root folder
-            let parentFile = new File(parentDir, '..');
-            files = [parentFile, ...files];
-        }
         dir.children = files;
-        return files;
+        return dir.children;
     }
 
     async open(file) {

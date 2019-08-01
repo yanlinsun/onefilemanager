@@ -344,16 +344,6 @@ class ListView {
             log.debug("open dir [%s]", f.fullpath);
             let view = this.dom.parentNode.views.get(f.fullpath);
             if (!view) {
-                if (f.children.length == 0) {
-                    try {
-                        await this.fs.listDir(f);
-                    } catch (err) {
-                        // permission issue, or timeout
-                        // TODO display error in status bar
-                        log.error(err);
-                        return;
-                    }
-                }
                 view = new ListView(this.fs, this.dom.parentNode, f);
             }
             this.switchTo(view);
@@ -447,7 +437,7 @@ class ListView {
         if (value instanceof Date) {
             c.innerText = value.toLocaleString();
         } else {
-            c.innerText = value;
+            c.innerText = value ? value : '-';
         }
     }
 

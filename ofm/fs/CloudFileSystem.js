@@ -19,19 +19,22 @@ class CloudFileSystem {
      * get next available provider which not in the exclude list.
      * excludeList - string array Provider names
      */
-    async getProvider(excludeList) {
+    async getProvider(providerId, excludeList) {
         let ex = excludeList ? Array.from(excludeList) : null;
         for (let p of this.providers.values()) {
             if (!ex || ex.indexOf(p.name) === -1) {
-                let c = await p.connection;
-                if (c === -1) {
-                    // not login or expired, try again
-                    p.connection = p.connect();
-                    c = await p.connection;
+                if (!providerId || p.providerId === providerId) {
+                    let c = await p.connection;
+                    if (c === -1) {
+                        // not login or expired, try again
+                        p.connection = p.connect();
+                        c = await p.connection;
+                    }
+                    return p;
                 }
-                return p;
             }
         }
+        return null;
     }
 
     async isAllConnected() {
@@ -55,7 +58,8 @@ class CloudFileSystem {
     }
 
     async getHomeDir() {
-        let file = await this.getFile("/");
+        let provider = await this.getProvider();
+        let file = provider.rootDir();
         return await this.listDir(file);
     }
 
@@ -69,15 +73,38 @@ class CloudFileSystem {
 
     async getFile(fullpath, bypassCache) {
         let f = new File(fullpath);
+        f.fs = this;
+        if (this.isRoot(fullpath)) {
+            f.isDirectory = true;
+        } else {
+            let i = fullpath.indexOf('/');
+            if (i !== -1) {
+                f.cloudProvider = fullpath.substring(0, i);
+            } else {
+                throw new Error("Malfomed cloud file path");
+            }
+        }
         f.fs = this.name;
         return f;
     }
 
+    isRoot(fullpath) {
+        return fullpath === '/';
+    }
+
     async listDir(directory, bypassCache) {
-        let provider = await this.getProvider();
-        let files = await provider.listDir(directory.fullpath);
+        let files;
+        if (this.isRoot(directory.fullpath)) {
+            files = [];
+            for (let p of this.providers.values()) {
+                files.push(p.rootDir());
+            }
+        } else {
+            let provider = await this.getProvider(directory.cloudProvider);
+            files = await provider.listDir(directory);
+        }
         directory.children = files;
-        return files;
+        return directory.children;
     }
 
     async open(file) {

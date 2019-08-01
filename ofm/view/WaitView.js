@@ -28,7 +28,7 @@ class WaitView {
     async check() {
         let all = await this.fs.isAllConnected();
         if (all) {
-            switchTo(this.fs, this.view, this.fullpath);
+            this.switchTo(this.fs, this.view, this.fullpath);
         }
     }
 
@@ -112,8 +112,10 @@ class WaitView {
             c = document.createElement("button");
             c.innerText = "Connect";
             c.onclick = async () => {
-                await provider.connect(true);
-                this.check();
+                let f = await provider.reconnect();
+                if (f) {
+                    this.check();
+                }
             };
         }
         p.appendChild(c);

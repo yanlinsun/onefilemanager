@@ -2,8 +2,9 @@
 
 class CloudProvider {
     constructor(name, provider) {
-        this.name = name;
+        this.providerId = provider + "-" + name;
         this.provider = provider;
+        this.name = name;
         this.connection = this.connect();
     }
     
@@ -13,11 +14,13 @@ class CloudProvider {
      * code%3D4%2FjwHJjCMYtw9K_GXxFAxsD3Xz5VnenPqD2m9p_8eZPXbYKe6PTpbCfP4
      * %26scope%3Dhttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly
      * &approvalCode=4%2FjwHJjCMYtw9K_GXxFAxsD3Xz5VnenPqD2m9p_8eZPXbYKe6PTpbCfP4o
-     * 
+     *
+     * http://localhost/?code=4%2FlgFnH4bmBtngbmNgfgs7GyySiBDklnn9lgU851NUypOGy8KXwueVVfYWd5F2vTe5U0TsfhvX6uvKG3r9PUVx2_s
+     * &scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly#
      */
     handleOAuthUrl(url, win, resolve, reject) {
         let l = decodeURIComponent(url);
-        var raw_code = /approvalCode=([^&]*)/.exec(l) || null;
+        var raw_code = /code=([^&]*)/.exec(l) || null;
         var code = (raw_code && raw_code.length > 1) ? raw_code[1] : null;
         var error = /\?error=(.+)$/.exec(l);
 
@@ -32,6 +35,11 @@ class CloudProvider {
         }
     }
 
+    async reconnect() {
+        this.connection = this.connect(true);
+        return await this.connection;
+    }
+    
     /**
      * Describe the provide's general properties
      * return object - Cloud Properties
@@ -101,6 +109,14 @@ class CloudProvider {
      * buffer - byte array
      */
     async upload(fullpath, buffer) {
+        throw new Error("Method should be implement by subclass");
+    }
+
+    /**
+     * Get the root directory
+     * return File
+     */
+    rootDir() {
         throw new Error("Method should be implement by subclass");
     }
 }

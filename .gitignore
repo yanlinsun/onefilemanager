@@ -63,3 +63,4 @@ typings/
 # ofm specific
 *.ignore.*
 *.toml
+config/
