@@ -14,9 +14,9 @@ const FileAttr = {
 }
 
 class ListView {
-    constructor(fs, p, dir) {
+    constructor(p, dir, message) {
         log.debug("ListView for [%s] in container [%s]", dir.fullpath, p.id);
-        this.fs = fs;
+        this.fs = dir.fs;
         this.dir = dir;
         let c = document.createElement("div")
         c.classList.add("window");
@@ -378,7 +378,7 @@ class ListView {
     async show(focus) {
         this.dom.classList.remove("hide");
         if (!this.uiAdjusted) {
-            let files;
+            let files, parentFile;
             try {
                 files = await this.fs.listDir(this.dir);
             } catch (err) {
@@ -386,8 +386,21 @@ class ListView {
                 this.dir = await this.fs.getHomeDir();
                 files = await this.fs.listDir(this.dir);    
             }
-            files.forEach(f => this.displayFile(f));
-            window.setTimeout(() => this.adjustUI(), 0);
+            parentFile = await this.fs.getParentFile(this.dir);
+            if (parentFile) {
+                this.displayFile(parentFile, '..');
+            }
+            if (files) {
+                if (window.ofmconfig.Folder.MixWithFile) {
+                    files.forEach(f => this.displayFile(f));
+                } else {
+                    let folders = files.filter(f => f.isDirectory);
+                    let notFolders = files.filter(f => !f.isDirectory);
+                    folder.forEach(f => this.displayFile(f));
+                    notFolders.forEach(f => this.displayFile(f));
+                }
+                window.setTimeout(() => this.adjustUI(), 0);
+            }
             this.uiAdjusted = true;
         }
         if (focus) {

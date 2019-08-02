@@ -52,7 +52,7 @@ class CloudProvider {
      *   invalidFilenameChars - string. chars which is invlid in filename
      */
     getProperty() {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
@@ -66,25 +66,25 @@ class CloudProvider {
      *   ofmroot - path of ofm root folder
      */
     async getUserProperty() {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
      * connect to the cloud provider, login.
      */
     async connect(...params) {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
      * disconnect from the cloud provider, logout.
      */
     async disconnect(...params) {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     async getFile(fullpath) {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
@@ -92,7 +92,7 @@ class CloudProvider {
      * returns string array Filename e.g OneFile.txt
      */
     async listDir(fullpath) {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
@@ -100,7 +100,7 @@ class CloudProvider {
      * return byte array File content
      */
     async download(fullpath) {
-        throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
 
@@ -110,6 +110,7 @@ class CloudProvider {
      */
     async upload(fullpath, buffer) {
         throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 
     /**
@@ -118,6 +119,7 @@ class CloudProvider {
      */
     rootDir() {
         throw new Error("Method should be implement by subclass");
+        throw log.subimpl;
     }
 }
 

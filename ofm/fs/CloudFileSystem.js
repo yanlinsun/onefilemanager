@@ -1,12 +1,13 @@
 'use strict';
 
 const FileSystem = require('./FileSystemEnum.js');
+const OneFileSystem = require('./OneFileSystem.js');
 const GoogleDrive = require('./cloud/GoogleDrive.js');
 const File = require('./File.js');
 
-class CloudFileSystem {
+class CloudFileSystem extends OneFileSystem {
     constructor() {
-        this.name = FileSystem.CloudFileSystem;
+        super(FileSystem.CloudFileSystem);
         this.providers = [];
         this.initProviders();
     }
@@ -49,102 +50,70 @@ class CloudFileSystem {
 
     async download(file) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        throw log.notimpl;
     }
 
     async upload(file) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        throw log.notimpl;
     }
 
-    async getHomeDir() {
-        let provider = await this.getProvider();
-        let file = provider.rootDir();
-        return await this.listDir(file);
+    async _getFileAttr(file) {
+        throw log.notimpl;
     }
 
-    async getParentFile(file) {
-        throw new Error("Not implemented yet");
+    isRoot(dir) {
+        return dir.fullpath === '/';
     }
 
-    async getFileAttr(file) {
-        throw new Error("Not implemented yet");
-    }
-
-    async getFile(fullpath, bypassCache) {
-        let f = new File(fullpath);
-        f.fs = this;
-        if (this.isRoot(fullpath)) {
-            f.isDirectory = true;
-        } else {
-            let i = fullpath.indexOf('/');
-            if (i !== -1) {
-                f.cloudProvider = fullpath.substring(0, i);
-            } else {
-                throw new Error("Malfomed cloud file path");
-            }
-        }
-        f.fs = this.name;
-        return f;
-    }
-
-    isRoot(fullpath) {
-        return fullpath === '/';
-    }
-
-    async listDir(directory, bypassCache) {
+    async _getChildren(dir, bypassCache) {
         let files;
-        if (this.isRoot(directory.fullpath)) {
+        if (this.isRoot(dir)) {
             files = [];
             for (let p of this.providers.values()) {
                 files.push(p.rootDir());
             }
         } else {
-            let provider = await this.getProvider(directory.cloudProvider);
-            files = await provider.listDir(directory);
+            let provider = await this.getProvider(dir.cloudProvider);
+            files = await provider.listDir(dir);
         }
         directory.children = files;
         return directory.children;
     }
 
-    async open(file) {
-        throw new Error("Not implemented yet");
+    async _getOpenPath(file) {
+        throw log.notimpl;
     }
 
-    async move(srcFs, files, target) {
+    async _move(srcFs, files, target) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        throw log.notimpl;
     }
 
-    async copy(srcFs, files, target) {
+    async _copy(srcFs, files, target) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        throw log.notimpl;
     }
 
-    async moveToTrash(files) {
-        throw new Error("Not implemented yet");
+    async _moveToTrash(files) {
+        throw log.notimpl;
     }
 
-    async delete(files, permanent) {
+    async _delete(files) {
         let provider = await this.getProvider();
-        throw new Error("Not implemented yet");
+        throw log.notimpl;
     }
 
-    async createFilder(name, target) {
-        throw new Error("Not implemented yet");
+    async _createFilder(name, target) {
+        throw log.notimpl;
     }
 
-    async readFile(fullpath) {
-        throw new Error("Not implemented yet");
+    async _readFile(fullpath) {
+        throw log.notimpl;
     }
 
-    async writeFile(name, target, content) {
-        let fullpath = path.resolve(target.fullpath, name);
-        return await this.writeFile(fullpath, content);
-    }
-
-    async writeFile(fullpath, content) {
-        throw new Error("Not implemented yet");
+    async _writeFile(fullpath, content) {
+        throw log.notimpl;
     }
 }
 

@@ -87,7 +87,7 @@ async function createTab(setting, container) {
         switch (t.view) {
             case Views[0]:
             default:
-                return new ListView(t.fs, container, f, t.message);
+                return new ListView(container, f, t.message);
                 break;
         }
     } catch (err) {

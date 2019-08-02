@@ -135,6 +135,10 @@ function printf(msg, ...args) {
     return sprintf(msg, ...args);
 }
 
+const subimpl = new Error("Method should be implemented in subclass");
+const noimpl = new Error("Method not implemented yet");
+
 module.exports = { init, debug, error, warning, info, verbose, warn, toUser, printf,
+    subimpl, noimpl,
     // for testing only
     setting };

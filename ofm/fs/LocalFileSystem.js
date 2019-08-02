@@ -9,30 +9,15 @@ const File = require('./File.js');
 const FileType = require('./FileType.js');
 const cache = require('./Cache.js');
 const FileSystem = require('./FileSystemEnum.js');
+const OneFileSystem = require('./OneFileSystem.js');
 const log = require('../trace/Log.js');
 
-class LocalFileSystem {
+class LocalFileSystem extends OneFileSystem {
     constructor() {
-        this.name = FileSystem.LocalFileSystem;
+        super(FileSystem.LocalFileSystem);
     }
 
-    homeDir() {
-        return os.homedir();
-    }
-
-    async getHomeDir() {
-        return await this.getFile(os.homedir());
-    }
-
-    async getParentFile(file) {
-        let dir = path.resolve(file.fullpath, '..');
-        if (dir != file.fullpath) {
-            return new File(dir);
-        } 
-        return null;
-    }
-
-    async getFileAttr(file) {
+    async _getFileAttr(file) {
         let p = new Promise((resolve, reject) => {
             hidefile.isHidden(file.fullpath, (err, flag) => {
                 file.isHidden = flag;
@@ -61,38 +46,7 @@ class LocalFileSystem {
         return await p;
     }
 
-    async getFile(fullpath, bypassCache) {
-        log.debug("lfs get [%s]", fullpath);
-        let f = cache.get(fullpath);
-        if (!f || bypassCache) {
-            log.debug("lfs [%s] not in cache, read from fs", fullpath);
-            f = new File(fullpath);
-            let p = this.getFileAttr(f);
-            cache.set(fullpath, p);
-            await p;
-            log.debug("lfs [%s] read from fs finished", fullpath);
-            cache.set(fullpath, f);
-        } else if (f instanceof Promise) {
-            log.debug("lfs [%s] awaitable in cache, wait", fullpath);
-            f = await f;
-            log.debug("lfs [%s] awaitable finished", fullpath);
-        } else if (f instanceof File) {
-            log.debug("lfs read [%s] from cache", fullpath);
-        }
-        return f;
-    }
-
-    async listDir(dir, bypassCache) {
-        if (!(dir instanceof File)) {
-            throw new Error("listDir require parameter type of File");
-        }
-        if (!dir.isDirectory) {
-            throw new Error(dir.fullpath + " is not a directory");
-        }
-        if (!bypassCache && dir.children.length > 0) {
-            return dir.children;
-        }
-        log.debug("lfs list [%s] from fs", dir.fullpath);
+    async _getChildren(dir, bypassCache) {
         let loading = new Promise((resolve, reject) => {
             fs.readdir(dir.fullpath, { withFileTypes: false }, (err, files) => {
                 if (err) {
@@ -103,34 +57,20 @@ class LocalFileSystem {
 
             });
         });
-        let files = await loading;
-        log.debug("lfs list [%s] loaded [%i] files", dir.fullpath, files.length);
-        files = files.map(f => this.getFile(path.resolve(dir.fullpath, f)));
-        log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
-        files = await Promise.all(files);
-        log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
-        dir.children = files;
-        return dir.children;
+        return await loading;
     }
 
-    async open(file) {
-        if (file.isDirectory) {
-            throw new Error(file.fullpath + " is not a file");
-        }
-        log.debug("lfs open [%s]", file.fullpath);
-        shell.openItem(file.fullpath);
+    async _getOpenPath(file) {
+        return file.fullpath;
     }
 
-    async move(srcFs, files, target) {
-        if (!(target instanceof File)) {
-            throw new Error("target must be a File, current: " + target);
-        }
+    async _move(srcFs, files, target) {
         if (srcFs instanceof LocalFileSystem) {
-            return await this.localMove(files, target);
+            return await this._localMove(files, target);
         }
     }
 
-    async localMove(files, target) {
+    async _localMove(files, target) {
         let promises = files.map(f => new Promise((resolve, reject) => {
             let dest = path.resolve(target.fullpath, f.fullname);
             fs.rename(f.fullpath, dest,
@@ -146,7 +86,7 @@ class LocalFileSystem {
         return result;
     }
 
-    async copy(srcFs, files, target) {
+    async _copy(srcFs, files, target) {
         let promises = files.map(f => new Promise((resolve, reject) => {
             let dest = path.resolve(target.fullpath, f.fullname);
             fs.copyFile(f.fullpath, dest,
@@ -162,14 +102,11 @@ class LocalFileSystem {
         return result;
     }
 
-    moveToTrash(files) {
+    async _moveToTrash(files) {
         return files.map(f => shell.moveItemToTrash(f.fullpath));
     }
 
-    async delete(files, permanently) {
-        if (!permanently) {
-            return this.moveToTrash(files);
-        }
+    async _delete(files) {
         let promises = files.map(f => new Promise((resolve, reject) => {
             if (f.isDirectory) {
                 fs.rmdir(f.fullpath, (err) => { 
@@ -193,7 +130,7 @@ class LocalFileSystem {
         return result;
     }
 
-    async createFolder(name, target) {
+    async _createFolder(name, target) {
         let fullpath = path.resolve(target.fullpath, name);
         let p = new Promise((resolve, reject) => {
             fs.mkdir(fullpath, (err) => {
@@ -208,7 +145,7 @@ class LocalFileSystem {
         return result;
     }
 
-    async readFile(fullpath) {
+    async _readFile(fullpath) {
         let p = new Promise((resolve, reject) => {
             fs.readFile(fullpath, (err, content) => {
                 if (err) {
@@ -222,12 +159,7 @@ class LocalFileSystem {
         return content;
     }
 
-    async writeFile(name, target, content) {
-        let fullpath = path.resolve(target.fullpath, name);
-        return await this.writeFile(fullpath, content);
-    }
-
-    async writeFile(fullpath, content) {
+    async _writeFile(fullpath, content) {
         let p = new Promise((resolve, reject) => {
                 fs.writeFile(fullpath, content ? content : "", (err) => {
                     if (err) {

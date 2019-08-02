@@ -4,7 +4,16 @@ const os = require('os');
 
 const Default = {
     General : {
-        ShowHidden : false,
+    },
+
+    View: {
+        ShowHidden: false,
+    },
+
+    Folder: {
+        MixWithFile: false,
+        SortWithFile: false,
+        SortMethod: "Name"
     },
 
     Tabs : {
