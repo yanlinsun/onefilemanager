@@ -150,7 +150,7 @@ class WaitView {
             case Views.ListView:
             default:
                 let f = await fs.getFile(fullpath);
-                view = new ListView(fs, this.dom.parentNode, f);
+                view = new ListView(this.dom.parentNode, f);
         }
         await view.show(true);
         this.hide();

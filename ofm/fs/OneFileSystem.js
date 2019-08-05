@@ -16,6 +16,14 @@ class OneFileSystem {
         this.name = name;
     }
 
+    updateCache(files, overwrite) {
+        files.forEach(f => {
+            if (overwrite || !cache.has(f.fullpath)) {
+                cache.set(f.fullpath, f);
+            }
+        });
+    }
+
     homeDir() {
         return os.homedir();
     }
@@ -36,7 +44,7 @@ class OneFileSystem {
     }
 
     async _getFileAttr(file) {
-        throw log.subimpl;
+        throw new Error("Method should be implemented by subclass");
     }
 
     async getFile(fullpath, bypassCache) {
@@ -61,28 +69,18 @@ class OneFileSystem {
     }
 
     async _getChildren(dir, bypassCache) {
-        throw log.subimpl("_getChildren");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async listDir(dir, bypassCache) {
         if (!dir.isDirectory) {
             throw new Error(log.printf("%s is not a directory", dir.fullpath));
         }
-        if (!bypassCache && dir.children !== null) {
+        if (!bypassCache && dir.children) {
             return dir.children;
         }
-        log.debug("lfs list [%s] from fs", dir.fullpath);
-        let loading = await this._getChildren(dir); 
-        let files = await loading;
-        log.debug("lfs list [%s] loaded [%i] files", dir.fullpath, files.length);
-        files = files.map(f => {
-            let file = this.getFile(path.resolve(dir.fullpath, f), bypassCache);
-            file.parentFile = dir;
-            return file;
-        });
-        log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
-        files = await Promise.all(files);
-        log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
+        let files = await this._getChildren(dir); 
+        dir.children = files;
         return dir.children;
     }
 
@@ -96,7 +94,7 @@ class OneFileSystem {
     }
 
     async _getOpenPath(file) {
-        throw log.subimpl("getOpenPath");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async move(srcFs, files, target) {
@@ -107,7 +105,7 @@ class OneFileSystem {
     }
 
     async _move(srcFs, files, target) {
-        throw log.subimpl("_move");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async copy(srcFs, files, target) {
@@ -118,11 +116,11 @@ class OneFileSystem {
     }
 
     async _copy(srcFs, files, target) {
-        throw log.subimpl("_copy");
+        throw new Error("Method should be implemented by subclass");
     }
 
     _moveToTrash(files) {
-        throw log.subimpl("_moveToTrash");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async delete(files, permanently) {
@@ -133,7 +131,7 @@ class OneFileSystem {
     }
 
     async _delete(files) {
-        throw log.subimpl("_delete");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async createFolder(name, target) {
@@ -141,7 +139,7 @@ class OneFileSystem {
     }
 
     async _createFolder(name, target) {
-        throw log.subimpl("_createFolder");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async readFile(fullpath) {
@@ -149,7 +147,7 @@ class OneFileSystem {
     }
 
     async _readFile(fullpath) {
-        throw log.subimpl("_readFile");
+        throw new Error("Method should be implemented by subclass");
     }
 
     async writeFile(name, target, content) {
@@ -162,7 +160,7 @@ class OneFileSystem {
     }
 
     async _writeFile(fullpath, content) {
-        throw log.subimpl("writeFile");
+        throw new Error("Method should be implemented by subclass");
     }
 }
 

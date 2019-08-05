@@ -47,6 +47,7 @@ class LocalFileSystem extends OneFileSystem {
     }
 
     async _getChildren(dir, bypassCache) {
+        log.debug("lfs list [%s] from fs", dir.fullpath);
         let loading = new Promise((resolve, reject) => {
             fs.readdir(dir.fullpath, { withFileTypes: false }, (err, files) => {
                 if (err) {
@@ -57,7 +58,17 @@ class LocalFileSystem extends OneFileSystem {
 
             });
         });
-        return await loading;
+        let files = await loading;
+        log.debug("lfs list [%s] loaded [%i] files", dir.fullpath, files.length);
+        files = files.map(f => {
+            let file = this.getFile(path.resolve(dir.fullpath, f), bypassCache);
+            file.parentFile = dir;
+            return file;
+        });
+        log.debug("lfs list [%s] waiting for all files' attributes to be loaded", dir.fullpath);
+        files = await Promise.all(files);
+        log.debug("lfs list [%s] all files attributes are loaded", dir.fullpath);
+        return files;
     }
 
     async _getOpenPath(file) {

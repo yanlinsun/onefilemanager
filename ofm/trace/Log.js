@@ -41,7 +41,7 @@ function log(level, msg, ...args) {
         return null;
     }
     let d = new Date();
-    if (typeof(msg) !== "string" && !(msg instanceof Error)) {
+    if (typeof(msg) !== "string") {
         return consoleLogObj(msg);
     } else {
         let s = sprintf("%i-%02i-%02i %02i:%02i:%02i.%03i > " + msg, 
@@ -135,10 +135,6 @@ function printf(msg, ...args) {
     return sprintf(msg, ...args);
 }
 
-const subimpl = new Error("Method should be implemented in subclass");
-const noimpl = new Error("Method not implemented yet");
-
 module.exports = { init, debug, error, warning, info, verbose, warn, toUser, printf,
-    subimpl, noimpl,
     // for testing only
     setting };

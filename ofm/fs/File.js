@@ -23,7 +23,7 @@ class File {
         this._directory = false;
         this.isHidden = false;
         this.type = FileType.getFiletype(this.ext);
-        this._children = null;
+        this.children = null;
         this.accessible = true;
         this.cloudProvider = null;
         this.parentFile = null;

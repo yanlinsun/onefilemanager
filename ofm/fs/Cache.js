@@ -19,4 +19,8 @@ function clear() {
     __cache.clear();
 }
 
-module.exports = { get, set, clear };
+function has(fullpath) {
+    return __cache.has(fullpath);
+}
+
+module.exports = { get, set, clear, has };

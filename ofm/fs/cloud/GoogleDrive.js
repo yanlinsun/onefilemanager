@@ -178,8 +178,7 @@ class GoogleDrive extends CloudProvider {
     }
 
     rootDir() {
-        let f = new File(this.providerId);
-        f.fs = CloudFileSystem;
+        let f = new File(this.providerId, window.cloudfs);
         f.cloudProvider = this.providerId;
         f.original = {
             root : true,
@@ -191,8 +190,7 @@ class GoogleDrive extends CloudProvider {
     }
 
     newFile(dir, original) {
-        let f = new File(dir.fullpath + "/" + original.name);
-        f.fs = CloudFileSystem;
+        let f = new File(dir.fullpath + "/" + original.name, window.cloudfs);
         f.cloudProvider = this.providerId;
         f.original = original;
         this.setFileType(f, original.mimeType);

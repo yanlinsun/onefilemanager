@@ -292,14 +292,14 @@ class ListView {
         this.adjustPlaceholders();
     }
 
-    displayFile(f) {
+    displayFile(f, name) {
         if (f.isHidden && !ofmconfig.General.ShowHidden) {
             return;
         }
         let namerow = this.nameTable.insertRow();
         namerow.file = f;
         let itemOption = { rightAlign: false, icon: f.type.icon, hidden: f.isHidden };
-        this.createItem(namerow, f.fullname, itemOption);
+        this.createItem(namerow, name ? name : f.fullname, itemOption);
         let attrrow = this.attrTable.insertRow();
         namerow.attr = attrrow;
         itemOption.icon = null;
@@ -344,7 +344,7 @@ class ListView {
             log.debug("open dir [%s]", f.fullpath);
             let view = this.dom.parentNode.views.get(f.fullpath);
             if (!view) {
-                view = new ListView(this.fs, this.dom.parentNode, f);
+                view = new ListView(this.dom.parentNode, f);
             }
             this.switchTo(view);
         } else {
@@ -379,6 +379,10 @@ class ListView {
         this.dom.classList.remove("hide");
         if (!this.uiAdjusted) {
             let files, parentFile;
+            parentFile = await this.fs.getParentFile(this.dir);
+            if (parentFile) {
+                this.displayFile(parentFile, '..');
+            }
             try {
                 files = await this.fs.listDir(this.dir);
             } catch (err) {
@@ -386,21 +390,17 @@ class ListView {
                 this.dir = await this.fs.getHomeDir();
                 files = await this.fs.listDir(this.dir);    
             }
-            parentFile = await this.fs.getParentFile(this.dir);
-            if (parentFile) {
-                this.displayFile(parentFile, '..');
-            }
             if (files) {
                 if (window.ofmconfig.Folder.MixWithFile) {
                     files.forEach(f => this.displayFile(f));
                 } else {
                     let folders = files.filter(f => f.isDirectory);
                     let notFolders = files.filter(f => !f.isDirectory);
-                    folder.forEach(f => this.displayFile(f));
+                    folders.forEach(f => this.displayFile(f));
                     notFolders.forEach(f => this.displayFile(f));
                 }
-                window.setTimeout(() => this.adjustUI(), 0);
             }
+            window.setTimeout(() => this.adjustUI(), 0);
             this.uiAdjusted = true;
         }
         if (focus) {

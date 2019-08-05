@@ -4,6 +4,7 @@ const FileSystem = require('./FileSystemEnum.js');
 const OneFileSystem = require('./OneFileSystem.js');
 const GoogleDrive = require('./cloud/GoogleDrive.js');
 const File = require('./File.js');
+const log = require('../trace/Log.js');
 
 class CloudFileSystem extends OneFileSystem {
     constructor() {
@@ -50,16 +51,21 @@ class CloudFileSystem extends OneFileSystem {
 
     async download(file) {
         let provider = await this.getProvider();
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async upload(file) {
         let provider = await this.getProvider();
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _getFileAttr(file) {
-        throw log.notimpl;
+        if (this.isRoot(file)) {
+            file.isDirectory = true;
+            return file;
+        } else {
+            throw new Error("Not implemented yet");
+        }
     }
 
     isRoot(dir) {
@@ -77,43 +83,43 @@ class CloudFileSystem extends OneFileSystem {
             let provider = await this.getProvider(dir.cloudProvider);
             files = await provider.listDir(dir);
         }
-        directory.children = files;
-        return directory.children;
+        this.updateCache(files);
+        return files;
     }
 
     async _getOpenPath(file) {
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _move(srcFs, files, target) {
         let provider = await this.getProvider();
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _copy(srcFs, files, target) {
         let provider = await this.getProvider();
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _moveToTrash(files) {
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _delete(files) {
         let provider = await this.getProvider();
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _createFilder(name, target) {
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _readFile(fullpath) {
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 
     async _writeFile(fullpath, content) {
-        throw log.notimpl;
+        throw new Error("Not implemented yet");
     }
 }
 
