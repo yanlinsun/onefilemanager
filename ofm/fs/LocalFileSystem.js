@@ -17,6 +17,21 @@ class LocalFileSystem extends OneFileSystem {
         super(FileSystem.LocalFileSystem);
     }
 
+    async getParentFile(file) {
+        if (file.parentFile) {
+            return file.parentFile;
+        }
+        let parentFullpath = path.resolve(file.fullpath, '..');
+        if (parentFullpath === file.fullpath) {
+            // root folder
+            
+        } else {
+            file.parentFile = await this.getFile(file.parentFullpath);
+        }
+        file.parentFile = await this.getFile(file.parentFullpath);
+        return file.parentFile;
+    }
+
     async _getFileAttr(file) {
         let p = new Promise((resolve, reject) => {
             hidefile.isHidden(file.fullpath, (err, flag) => {

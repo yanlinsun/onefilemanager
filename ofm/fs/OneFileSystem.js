@@ -33,6 +33,7 @@ class OneFileSystem {
     }
 
     async getParentFile(file) {
+        throw new Error("Method should be implemented by subclass");
         if (file.parentFile) {
             return file.parentFile;
         }

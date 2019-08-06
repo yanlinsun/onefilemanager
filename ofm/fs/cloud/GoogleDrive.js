@@ -13,7 +13,7 @@ const FileType = require('../FileType.js');
 const log = require('../../trace/Log.js');
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -56,21 +56,22 @@ class GoogleDrive extends CloudProvider {
             log.debug(token);
             if (token.refresh_token) {
                 refreshToken = token.refresh_token;
-            }
-            if (!isNaN(token.expires_in)) {
-                file = await lfs.getFile(TOKEN_FILE);
-                if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
-                    log.debug("%s token expired", this.providerId);
-                    token = null;
-                }
-            } else if (!isNaN(token.expiry_date)) {
-                if (new Date().getTime() >= token.expiry_date) {
-                    log.debug("%s token expired", this.providerId);
-                    token = null;
-                }
             } else {
-                log.debug("%s malfomed token", this.providerId);
-                token = null;
+                if (!isNaN(token.expires_in)) {
+                    file = await lfs.getFile(TOKEN_FILE);
+                    if (new Date().getTime() >= file.date.getTime() + token.expires_in * 1000) {
+                        log.debug("%s token expired", this.providerId);
+                        token = null;
+                    }
+                } else if (!isNaN(token.expiry_date)) {
+                    if (new Date().getTime() >= token.expiry_date) {
+                        log.debug("%s token expired", this.providerId);
+                        token = null;
+                    }
+                } else {
+                    log.debug("%s malfomed token", this.providerId);
+                    token = null;
+                }
             }
         } catch (err) {
             if (err.code !== 'ENOENT') {
@@ -80,14 +81,10 @@ class GoogleDrive extends CloudProvider {
             token = null;
         }
         if (!token) {
-            if (refreshToken) {
-                token = await this.refreshAccessToken(refreshToken);
+            if (showLoginScreen) {
+                token = await this.getAccessToken(this.auth);
             } else {
-                if (showLoginScreen) {
-                    token = await this.getAccessToken(this.auth);
-                } else {
-                    return false;
-                }
+                return false;
             }
         }
         this.auth.setCredentials(token);
@@ -95,14 +92,11 @@ class GoogleDrive extends CloudProvider {
         return true;
     }
 
-    async refreshAccessToken(refreshToken) {
-        return null;
-    }
-
     async getAccessToken(oAuth2Client) {
         log.debug("%s Google Drive grab new token", this.providerId);
         const authUrl = oAuth2Client.generateAuthUrl({
-            access_type: 'online',
+            access_type: 'offline',
+            prompt: 'consent',
             scope: SCOPES,
         });
         let p = new Promise((resolve, reject) => {

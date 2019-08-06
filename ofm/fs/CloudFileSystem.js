@@ -17,6 +17,20 @@ class CloudFileSystem extends OneFileSystem {
         this.providers.push(new GoogleDrive('Default'));
     }
 
+    async getParentFile(file) {
+        if (file.parentFile) {
+            return file.parentFile;
+        }
+        let parentFullpath = path.resolve(file.fullpath, '..');
+        if (parentFullpath === file.fullpath) {
+            // root folder
+            
+        } else {
+            file.parentFile = await this.getFile(file.parentFullpath);
+        }
+        return file.parentFile;
+    }
+
     /** 
      * get next available provider which not in the exclude list.
      * excludeList - string array Provider names
