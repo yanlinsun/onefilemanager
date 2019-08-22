@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const FileSystem = require('./FileSystemEnum.js');
 const OneFileSystem = require('./OneFileSystem.js');
 const GoogleDrive = require('./cloud/GoogleDrive.js');
@@ -15,20 +16,6 @@ class CloudFileSystem extends OneFileSystem {
 
     initProviders() {
         this.providers.push(new GoogleDrive('Default'));
-    }
-
-    async getParentFile(file) {
-        if (file.parentFile) {
-            return file.parentFile;
-        }
-        let parentFullpath = path.resolve(file.fullpath, '..');
-        if (parentFullpath === file.fullpath) {
-            // root folder
-            
-        } else {
-            file.parentFile = await this.getFile(file.parentFullpath);
-        }
-        return file.parentFile;
     }
 
     /** 

@@ -1,14 +1,22 @@
 const expect = require('chai').expect;
-
+const testhelper = require("../spectron-helper");
+const app = testhelper.initialiseSpectron();
 const Shortcut = require('../../ofm/shortcut/Shortcut.js');
 
 suite('Shortcut', function() {
     suite('#translate()', function() {
 
         suiteSetup(function() {
+            return app.start();      
         });
 
         setup(function() {
+        });
+
+        suiteTeardown(function() {
+            if (app && app.isRunning()) {
+                return app.stop();
+            }
         });
 
         test('Control+H should be ctrl+h', function() {

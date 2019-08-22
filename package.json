@@ -4,7 +4,7 @@
   "description": "One file manager. Manage all files(local, cloud) in one application.",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron --experimental-modules .",
     "test": "mocha",
     "test-debug": "mocha --inspect-brk"
   },
@@ -28,6 +28,8 @@
     "jsdom-global": "3.0.2",
     "mocha": "^6.2.0",
     "mousetrap": "^1.6.3",
+    "registry-js": "^1.8.0",
+    "spectron": "^8.0.0",
     "sprintf-js": "^1.1.2",
     "toml": "^3.0.0"
   },

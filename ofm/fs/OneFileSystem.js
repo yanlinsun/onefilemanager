@@ -9,6 +9,7 @@ const File = require('./File.js');
 const FileType = require('./FileType.js');
 const cache = require('./Cache.js');
 const FileSystem = require('./FileSystemEnum.js');
+const Root = require('./Root.js');
 const log = require('../trace/Log.js');
 
 class OneFileSystem {
@@ -33,11 +34,13 @@ class OneFileSystem {
     }
 
     async getParentFile(file) {
-        throw new Error("Method should be implemented by subclass");
         if (file.parentFile) {
             return file.parentFile;
         }
-        if (!file.parentFullpath) {
+        if (parentFullpath === file.fullpath) {
+            // root folder
+            file.parentFile = Root.getRoot();            
+        } else {
             file.parentFullpath = path.resolve(file.fullpath, '..');
         }
         file.parentFile = await this.getFile(file.parentFullpath);
