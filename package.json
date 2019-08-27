@@ -4,7 +4,7 @@
   "description": "One file manager. Manage all files(local, cloud) in one application.",
   "main": "main.js",
   "scripts": {
-    "start": "electron --experimental-modules .",
+    "start": "electron .",
     "test": "mocha",
     "test-debug": "mocha --inspect-brk"
   },
@@ -21,6 +21,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "electron": "^5.0.6",
+    "electron-rebuild": "^1.8.6",
     "filesize": "^4.1.2",
     "googleapi": "^1.0.2",
     "hidefile": "^3.0.0",
@@ -28,12 +29,12 @@
     "jsdom-global": "3.0.2",
     "mocha": "^6.2.0",
     "mousetrap": "^1.6.3",
-    "registry-js": "^1.8.0",
     "spectron": "^8.0.0",
     "sprintf-js": "^1.1.2",
     "toml": "^3.0.0"
   },
   "dependencies": {
+    "registry-js": "^1.8.0",
     "googleapis": "^39.2.0",
     "keytar": "^5.0.0-beta.0"
   }
