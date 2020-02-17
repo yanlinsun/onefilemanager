@@ -1,7 +1,7 @@
 'use strict';
 
-import { enumerateValues, HKEY, RegistryValueType } from 'registry-js';
-//const { enumerateValues, HKEY, RegistryValueType } = require('registry-js');
+//import { enumerateValues, HKEY, RegistryValueType } from 'registry-js';
+const { enumerateValues, HKEY, RegistryValueType } = require('registry-js');
 const File = require('../File.js');
 
 class WindowsRoot extends File {
