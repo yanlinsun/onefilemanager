@@ -38,6 +38,10 @@ class File {
     get isDirectory() {
         return this._directory;
     }
+
+    get isRoot() {
+        return this._root;
+    }
 }
 
 module.exports = File;

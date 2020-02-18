@@ -17,20 +17,20 @@ class LocalFileSystem extends OneFileSystem {
         super(FileSystem.LocalFileSystem);
     }
 
+    async getRoot() {
+        let root = path.parse(process.cwd()).root;
+        return await this.getFile(root);
+    }
+
     async _getFileAttr(file) {
         let p = new Promise((resolve, reject) => {
             hidefile.isHidden(file.fullpath, (err, flag) => {
                 file.isHidden = flag;
                 fs.stat(file.fullpath, (err, stats) => {
                     if (err) {
-                        if (err.code === 'EPERM' ||
-                            err.code === 'EACCES') {
-                            file.accessible = false;
-                            log.error("File [%s] not accessible: %s", file.fullpath, err.message);
-                            resolve(file);
-                        } else {
-                            reject(err);
-                        }
+                        file.accessible = false;
+                        log.error("File [%s] not accessible: %s", file.fullpath, err.message);
+                        resolve(file);
                     } else {
                         file.size = stats.size;
                         file.date = new Date(stats.ctimeMs);

@@ -37,13 +37,17 @@ class OneFileSystem {
         if (file.parentFile) {
             return file.parentFile;
         }
+        let parentFullpath = path.resolve(file.fullpath, '..');
         if (parentFullpath === file.fullpath) {
             // root folder
-            file.parentFile = Root.getRoot();            
+            let root = Root.getRoot(); // file.parentFile = root is done in root constructor           
+            await root.buildChildren();
+            if (file.parentFile !== root) {
+                throw new Error("Logic error! Root not same");
+            }
         } else {
-            file.parentFullpath = path.resolve(file.fullpath, '..');
+            file.parentFile = await this.getFile(parentFullpath);
         }
-        file.parentFile = await this.getFile(file.parentFullpath);
         return file.parentFile;
     }
 

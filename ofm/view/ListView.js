@@ -77,8 +77,8 @@ class ListView {
             if (window.currentTab !== this) {
                 let opsite = window.currentTab;
                 window.currentTab = this;
-                this.focus();
                 window.opsiteTab = opsite;
+                this.focus();
                 opsite.blur();
             }
         }
@@ -133,7 +133,7 @@ class ListView {
     }
 
     createList(p) {
-        this.createHeader(p, "Name", "name", true);
+        this.createHeader(p, this.dir.fullpath, "name", true);
 
         let c = document.createElement("div");
         c.id = "file-name-list";
@@ -235,6 +235,11 @@ class ListView {
             let i = this.createSvgIcon("filter");
             i.classList.add("hide");
             p.appendChild(i);
+            
+            c = document.createElement("span");
+            c.id = "filter-string";
+            c.classList.add("hide");
+            p.appendChild(c);
         }
     }
 
@@ -299,7 +304,9 @@ class ListView {
         let namerow = this.nameTable.insertRow();
         namerow.file = f;
         let itemOption = { rightAlign: false, icon: f.type.icon, hidden: f.isHidden };
-        this.createItem(namerow, name ? name : f.fullname, itemOption);
+        this.createItem(namerow, 
+            name ? name : (f.fullname == "" ? f.fullpath : f.fullname), 
+            itemOption);
         let attrrow = this.attrTable.insertRow();
         namerow.attr = attrrow;
         itemOption.icon = null;
@@ -379,9 +386,11 @@ class ListView {
         this.dom.classList.remove("hide");
         if (!this.uiAdjusted) {
             let files, parentFile;
-            parentFile = await this.fs.getParentFile(this.dir);
-            if (parentFile) {
-                this.displayFile(parentFile, '..');
+            if (!this.dir.isRoot) {
+                parentFile = await this.fs.getParentFile(this.dir);
+                if (parentFile) {
+                    this.displayFile(parentFile, '..');
+                }
             }
             try {
                 files = await this.fs.listDir(this.dir);
@@ -576,9 +585,10 @@ class ListView {
         return this.nameTable.querySelector(".focus").file;
     }
 
-    filter(files) {
+    filter(files, filter) {
         let filterIcon = this.dom.querySelector("#icon-filter");
         filterIcon.classList.remove("hide");
+        this.updateFilterString(filter);
         Array.from(this.nameTable.rows).forEach(tr => {
             if (files.indexOf(tr.file.name) === -1) {
                 if (!tr.classList.contains("hide")) {
@@ -592,6 +602,16 @@ class ListView {
         });
     }
 
+    updateFilterString(filter) {
+        let filterString = this.dom.querySelector("#filter-string");
+        filterString.classList.remove("hide");
+        if (filter && filter !== "") {
+            filterString.innerText = " = \"" + filter + "\"";
+        } else {
+            filterString.innerText = "";
+        }
+    }
+
     getFilenames() {
         return this.dir.children.map(f => f.name);
     }
@@ -599,6 +619,9 @@ class ListView {
     clearFilter() {
         let filterIcon = this.dom.querySelector("#icon-filter");
         filterIcon.classList.add("hide");
+        let filterString = this.dom.querySelector("#filter-string");
+        filterString.classList.add("hide");
+        filterString.innerText = "";
         Array.from(this.nameTable.rows).forEach(tr => {
             tr.classList.remove("hide")
             tr.attr.classList.remove("hide");

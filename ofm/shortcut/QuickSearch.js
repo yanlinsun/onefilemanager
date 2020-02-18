@@ -1,12 +1,16 @@
 'use strict';
 const sprintf = require('sprintf-js').sprintf;
 const log = require('../trace/Log.js');
+const TimeoutMethod = 1;
+const DefaultTimeout = 2000;
 
 class QuickSearch {
     constructor(r) {
-        r("Esc", this.resetSearch);
-        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()_+-={}|[]\\:\";'<>?,./"), (e, key) => this.quickSearch(key));
+        r("Esc", () => this.resetSearch());
+        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()_+-={}|[]\\:\";'<>?,./"), (e, key) => this.quickSearch(e, key));
+        r("Backspace", (e, key) => this.quickSearch(e, key), true);
         this.applyConfig();
+        this.keys = [];
     }
 
     applyConfig() {
@@ -43,33 +47,48 @@ class QuickSearch {
                     log.toUser("QuickSearch config [%s] is invalid\n%s", ofmconfig.QuickSearch, err.toString());
                 }
             }
-            if (ofmconfig.QuickSearch.Timeout) {
-                this.timeout = ofmconfig.QuickSearch.Timeout;
+            this.resetMethod = ofmconfig.QuickSearch.ResetMethod;
+            if (this.resetMethod === TimeoutMethod) {
+                if (ofmconfig.QuickSearch.Timeout) {
+                    this.timeout = ofmconfig.QuickSearch.Timeout;
+                } else {
+                    this.timeout = DefaultTimeout;
+                }
             }
         }
         if (!this.method) {
             this.method = this.nativeMethod;
         }
-        if (!this.timeout) {
-            this.timeout = 2000;
-        }
     }
 
-    quickSearch(key) {
+    quickSearch(e, key) {
         log.debug("QuickSearch: %s", key);
-        if (!this.id) {
-            // new session
-            this.id = setTimeout(() => this.clear(), this.timeout);
-            this.keys = [];
-            this.files = currentTab.getFilenames();
-            this.fullFiles = this.files.slice();
+        if (key === "backspace") {
+            if (this.keys.length === 0) {
+                // do nothing, populate this keystroke to other handlers
+                return;
+            } else {
+                e.stopPropagation();
+                this.keys.pop();
+                this.files = this.fullFiles.slice();
+                if (this.keys.length === 0) {
+                    this.resetSearch();
+                    return;
+                }
+            }
         } else {
-            this.resetTimeout();
-        }
-        if (key === "Backspace") {
-            this.keys.pop();
-            this.files = this.fullFiles.slice();
-        } else {
+            if (this.resetMethod === TimeoutMethod) {
+                if (!this.id) {
+                    this.newId();
+                    this.initVariables();
+                } else {
+                    this.resetTimeout();
+                }
+            } else {
+                if (this.keys.length === 0) {
+                    this.initVariables();
+                }
+            }
             this.keys.push(key);
             if (this.files.length === 0) {
                 return;
@@ -82,7 +101,7 @@ class QuickSearch {
                 if (filtered.length === 0) {
                     this.keys.pop();
                 } else {
-                    currentTab.filter(filtered);
+                    currentTab.filter(filtered, this.keys.join(""));
                     this.files = filtered;
                 }
             }
@@ -95,10 +114,20 @@ class QuickSearch {
     resetSearch() {
         log.debug("Reset QuickSearch");
         currentTab.clearFilter();
+        this.keys = [];
+    }
+
+    initVariables() {
+        this.files = currentTab.getFilenames();
+        this.fullFiles = this.files.slice();
     }
 
     resetTimeout() {
         clearTimeout(this.id);
+        this.newId();
+    }
+
+    newId() {
         this.id = setTimeout(() => this.clear(), this.timeout);
     }
 
@@ -106,8 +135,9 @@ class QuickSearch {
         if (!this.notimeout) { // only for debug
             log.debug("QuickSearch clear");
             this.id = null;
-            this.keys = null; 
+            this.keys = []; 
             this.files = null;
+            currentTab.updateFilterString("");
         }
     }
 

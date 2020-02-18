@@ -10,6 +10,7 @@ const ListView = require('./view/ListView.js');
 const ErrorView = require('./view/ErrorView.js');
 const WaitView = require('./view/WaitView.js');
 const log = require('./trace/Log.js');
+const path = require('path');
 
 const Views = require('./view/ViewTypes.js');
 
@@ -41,12 +42,12 @@ function parse(setting) {
     if (p.length > 2) {
         r.view = Views.AllTypes.indexOf(p[0]) === -1 ? Views.ListView : p[0];
         r.fs = getFilesystem(p[1]);
-        r.fullpath = p[2];
+        r.fullpath = path.normalize(p[2]);
     } else if (p.length > 1) {
         r.fs = getFilesystem(p[0]);
-        r.fullpath = p[1];
+        r.fullpath = path.normalize(p[1]);
     } else {
-        r.fullpath = setting;
+        r.fullpath = path.normalize(setting);
     }
     return r;
 }

@@ -1,4 +1,5 @@
 'use strict';
+const log = require('../trace/Log.js');
 
 class NavShortcut {
     constructor(r) {
@@ -52,8 +53,11 @@ class NavShortcut {
     }
 
     parentFolder() {
-        let dir = currentTab.dir.parentDir();
-        currentTab.open(dir);
+        log.debug("Nav: Parent Folder");
+        let dir = currentTab.dir.parentFile;
+        if (dir) {
+            currentTab.open(dir);
+        }
         return false;
     }
 

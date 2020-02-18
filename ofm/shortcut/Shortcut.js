@@ -9,13 +9,31 @@ const mousetrap = require('mousetrap');
 
 class Shortcut {
     constructor() {
-        new FileShortcut(this.register);
-        new TabShortcut(this.register);
-        new NavShortcut(this.register);
-        new QuickSearch(this.register);
+        new FileShortcut((key, fn) => this.register(key, fn));
+        new TabShortcut((key, fn) => this.register(key, fn));
+        new NavShortcut((key, fn) => this.register(key, fn));
+        new QuickSearch((key, fn) => this.register(key, fn));
+        this.map = new Map();
     }
 
     register(key, fn) {
+        let obj = this.map.get(key);
+        if (obj) {
+            if (obj instanceof Function) {
+                let ary = [];
+                ary.push(obj);
+                ary.push(fn);
+                this.map.set(key, ary);
+                mousetrap.bind(key, (e, key) => this.multipleHandler(e, key, ary));
+                return;
+            } else if (obj instanceof Array) {
+                obj.push(fn);
+            } else {
+                log.error("Logic error, unknown instnace");
+            }
+        } else {
+            this.map.set(key, fn);
+        }
         if (key instanceof Array) {
             let keys = key.map(k => Shortcut.translate(k));
             log.debug("Shortcurt.register: Key[%s] => [%s]", keys.join(), (fn ? fn.name : ""));
@@ -24,6 +42,10 @@ class Shortcut {
             log.debug("Shortcurt.register: Key[%s] => [%s]", key, (fn ? fn.name : ""));
             mousetrap.bind(Shortcut.translate(key), fn);
         }
+    }
+
+    multipleHandler(e, key, fnAry) {
+        
     }
 
     static translate(k) {

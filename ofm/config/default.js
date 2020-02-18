@@ -73,6 +73,11 @@ const Default = {
             Configuration : "CommandOrAlt+,",
             Quit : [ "CommandOrControl+Q" ]
         }
+    },
+
+    QuickSearch : {
+        ResetMethod : 0,
+        Timeout : 2000
     }
 };
 
