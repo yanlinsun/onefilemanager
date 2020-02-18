@@ -7,8 +7,8 @@ const DefaultTimeout = 2000;
 class QuickSearch {
     constructor(r) {
         r("Esc", () => this.resetSearch());
-        r(Array.from("abcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()_+-={}|[]\\:\";'<>?,./"), (e, key) => this.quickSearch(e, key));
-        r("Backspace", (e, key) => this.quickSearch(e, key), true);
+        r(Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()_+-={}|[]\\:\";'<>?,./"), (e, key) => this.quickSearch(e, key), true);
+        r("Backspace", (e, key) => this.quickSearch(e, key));
         this.applyConfig();
         this.keys = [];
     }
@@ -66,14 +66,14 @@ class QuickSearch {
         if (key === "backspace") {
             if (this.keys.length === 0) {
                 // do nothing, populate this keystroke to other handlers
-                return;
+                return true;
             } else {
                 e.stopPropagation();
                 this.keys.pop();
                 this.files = this.fullFiles.slice();
                 if (this.keys.length === 0) {
                     this.resetSearch();
-                    return;
+                    return false;
                 }
             }
         } else {
