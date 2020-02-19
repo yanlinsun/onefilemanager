@@ -7,7 +7,7 @@ const shell = require('electron').shell;
 const hidefile = require('hidefile');
 const File = require('./File.js');
 const FileType = require('./FileType.js');
-const cache = require('./Cache.js');
+const FSCache = require('./Cache.js');
 const FileSystem = require('./FileSystemEnum.js');
 const Root = require('./Root.js');
 const log = require('../trace/Log.js');
@@ -15,12 +15,13 @@ const log = require('../trace/Log.js');
 class OneFileSystem {
     constructor(name) {
         this.name = name;
+        this.cache = new FSCache();
     }
 
     updateCache(files, overwrite) {
         files.forEach(f => {
-            if (overwrite || !cache.has(f.fullpath)) {
-                cache.set(f.fullpath, f);
+            if (overwrite || !this.cache.has(f.fullpath)) {
+                this.cache.set(f.fullpath, f);
             }
         });
     }
@@ -57,15 +58,15 @@ class OneFileSystem {
 
     async getFile(fullpath, bypassCache) {
         log.debug("lfs get [%s]", fullpath);
-        let f = cache.get(fullpath);
+        let f = this.cache.get(fullpath);
         if (!f || bypassCache) {
             log.debug("lfs [%s] not in cache, read from fs", fullpath);
             f = new File(fullpath, this);
             let p = this._getFileAttr(f);
-            cache.set(fullpath, p);
+            this.cache.set(fullpath, p);
             await p;
             log.debug("lfs [%s] read from fs finished", fullpath);
-            cache.set(fullpath, f);
+            this.cache.set(fullpath, f);
         } else if (f instanceof Promise) {
             log.debug("lfs [%s] awaitable in cache, wait", fullpath);
             f = await f;

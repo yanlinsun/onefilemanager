@@ -1,7 +1,7 @@
 'use strict';
 
 const WindowsRoot = require('./root/WindowsRoot.js');
-//const MacOSRoot = require('./root/macos.js');
+const MacOSRoot = require('./root/MacOSRoot.js');
 //const LinuxRoot = require('./root/linux.js');
 
 class Root {
@@ -12,7 +12,7 @@ class Root {
         if (process.platform === 'win32') {
             return new WindowsRoot();
         } else if (process.platform === 'darwin') {
- //           return new MacOSRoot();
+            return new MacOSRoot();
         } else if (process.platform === 'linux') {
  //           return new LinuxRoot();
         } else {

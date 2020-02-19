@@ -2,25 +2,31 @@
 
 const File = require('./File.js');
 
-const __cache = new Map();
+class FSCache {
 
-function get(fullpath) {
-        return __cache.get(fullpath);
-}
-
-function set(fullpath, file) {
-    if (!(file instanceof File || file instanceof Promise)) {
-        throw new Error("Parameter need to be a File or Promise, found: " + file);
+    constructor() {
+        this.__cache = new Map();
     }
-    __cache.set(fullpath, file);
+
+    get(fullpath) {
+            return this.__cache.get(fullpath);
+    }
+
+    set(fullpath, file) {
+        if (!(file instanceof File || file instanceof Promise)) {
+            throw new Error("Parameter need to be a File or Promise, found: " + file);
+        }
+        this.__cache.set(fullpath, file);
+    }
+
+    clear() {
+        this.__cache.clear();
+    }
+
+    has(fullpath) {
+        return this.__cache.has(fullpath);
+    }
+
 }
 
-function clear() {
-    __cache.clear();
-}
-
-function has(fullpath) {
-    return __cache.has(fullpath);
-}
-
-module.exports = { get, set, clear, has };
+module.exports = FSCache;
